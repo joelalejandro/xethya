@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -80,7 +80,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventemitter3_1 = __webpack_require__(2);
+const eventemitter3_1 = __webpack_require__(3);
 class Eventable extends eventemitter3_1.EventEmitter {
     constructor() {
         super();
@@ -98,6 +98,25 @@ exports.default = Eventable;
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
+Object.defineProperty(exports, "__esModule", { value: true });
+const assertion_error_1 = __importDefault(__webpack_require__(5));
+function assert(condition, message) {
+    if (!condition) {
+        throw new assertion_error_1.default(message);
+    }
+}
+exports.default = assert;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -108,16 +127,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const eventable_1 = __importDefault(__webpack_require__(0));
 exports.Eventable = eventable_1.default;
-const object_1 = __importDefault(__webpack_require__(3));
+const object_1 = __importDefault(__webpack_require__(4));
 exports.XethyaObject = object_1.default;
-const assert_1 = __importDefault(__webpack_require__(4));
+const assert_1 = __importDefault(__webpack_require__(1));
 exports.assert = assert_1.default;
 const BlumBlumShub = __importStar(__webpack_require__(6));
 exports.BlumBlumShub = BlumBlumShub;
+const MersenneTwister = __importStar(__webpack_require__(7));
+exports.MersenneTwister = MersenneTwister;
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -460,7 +481,7 @@ if (true) {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -476,25 +497,6 @@ class XethyaObject extends eventable_1.default {
     }
 }
 exports.default = XethyaObject;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-const assertion_error_1 = __importDefault(__webpack_require__(5));
-function assert(condition, message) {
-    if (!condition) {
-        throw new assertion_error_1.default(message);
-    }
-}
-exports.default = assert;
 
 
 /***/ }),
@@ -630,6 +632,256 @@ class BlumBlumShubAlgorithm {
     }
 }
 exports.BlumBlumShubAlgorithm = BlumBlumShubAlgorithm;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(__webpack_require__(1));
+/**
+ * @ignore
+ */
+exports.N = 624;
+/**
+ * @ignore
+ */
+exports.M = 397;
+/**
+ * @ignore
+ */
+exports.MATRIX_A = 0x9908b0df;
+/**
+ * @ignore
+ */
+exports.UPPER_MASK = 0x80000000;
+/**
+ * @ignore
+ */
+exports.LOWER_MASK = 0x7fffffff;
+/**
+ * @ignore
+ */
+exports.INIT_BY_ARRAY_SEED = 19650218;
+class MersenneTwisterAlgorithm {
+    /**
+     * Instantiates the Mersenne-Twister generator.
+     *
+     * @param  {Object} settings - Configuration for the generator:
+     *         - seedNumber: The number for the seed.
+     */
+    constructor(settings = {}) {
+        let seedNumber;
+        const defaults = {
+            seedNumber: undefined,
+        };
+        this.settings = Object.assign({}, defaults, settings);
+        const seed = this.settings.seedNumber;
+        if (seed) {
+            seedNumber = Math.abs(seed);
+        }
+        else {
+            // Try seeding with a custom algorithm.
+            seedNumber = Number(new Date().getTime().toString().split('')
+                .sort(() => 0.5 - Math.random()).join(''));
+        }
+        this.MT = new Array(exports.N);
+        this.MTI = exports.N + 1;
+        this.seedNumber = seedNumber;
+        this.initializeRandomGenerator(seedNumber);
+    }
+    /**
+     * Determines if the generator works better by being reinstantiated after
+     * every generated number.
+     *
+     * @public
+     * @function recommendsToReinstantiate
+     * @memberof MersenneTwisterAlgorithm
+     * @static
+     * @return {Boolean}
+     */
+    static recommendsToReinstantiate() {
+        return false;
+    }
+    /**
+     * Loads the initialization vector required for the algorithm,
+     * according to a given seed.
+     *
+     * @public
+     * @method initializeRandomGenerator
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @param  {Number} seedNumber - A seed can be any non-negative integer value.
+     */
+    initializeRandomGenerator(seedNumber) {
+        let seed = Math.abs(Math.floor(seedNumber));
+        this.MT[0] = seed >> 0;
+        for (this.MTI = 1; this.MTI < exports.N; this.MTI += 1) {
+            seed = this.MT[this.MTI - 1] ^ (this.MT[this.MTI - 1] >> 30);
+            this.MT[this.MTI] = ((((seed & 0xffff0000) >> 16) * 1812433253) << 16)
+                + ((seed & 0x0000ffff) * 1812433253)
+                + this.MTI;
+            this.MT[this.MTI] = this.MT[this.MTI] >> 0;
+        }
+    }
+    /**
+     * An alternative way to load the initialization vector for the algorithm.
+     *
+     * @public
+     * @method initializeByArray
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @param  {Array.<Number>} initKeyArray - A list of non-negative integer values.
+     */
+    initializeByArray(initKeyArray) {
+        let i = 1;
+        let j = 0;
+        const keyLength = initKeyArray.length;
+        assert_1.default(keyLength > 0, 'MersenneTwister#initializeByArray: initKeyArray must be an Array of at least one non-negative number.');
+        // Ensure positive, integer values.
+        const initKey = initKeyArray.map(v => Math.abs(Math.floor(v)));
+        this.initializeRandomGenerator(exports.INIT_BY_ARRAY_SEED);
+        let k = exports.N > keyLength ? exports.N : keyLength;
+        while (k > 0) {
+            const s = this.MT[i - 1] ^ (this.MT[i - 1] >> 30);
+            this.MT[i] = (this.MT[i] ^ (((((s & 0xffff0000) >> 16) * 1664525) << 16)
+                + ((s & 0x0000ffff) * 1664525)))
+                + initKey[j] + j;
+            this.MT[i] = this.MT[i] >> 0;
+            i += 1;
+            j += 1;
+            if (i >= exports.N) {
+                this.MT[0] = this.MT[exports.N - 1];
+                i = 1;
+            }
+            if (j >= keyLength) {
+                j = 0;
+            }
+            k -= 1;
+        }
+        for (k = exports.N - 1; k > 0; k -= 1) {
+            const s = this.MT[i - 1] ^ (this.MT[i - 1] >> 30);
+            this.MT[i] = (this.MT[i] ^ (((((s & 0xffff0000) >> 16) * 1566083941) << 16)
+                + ((s & 0x0000ffff) * 1566083941))) - i;
+            this.MT[i] = this.MT[i] >> 0;
+            i += 1;
+            if (i >= exports.N) {
+                this.MT[0] = this.MT[exports.N - 1];
+                i = 1;
+            }
+        }
+        this.MT[0] = 0x80000000;
+    }
+    /**
+     * Returns a random non-negative integer value.
+     *
+     * @public
+     * @function generateRandomInteger
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandomInteger() {
+        let y;
+        const mag01 = [0x0, exports.MATRIX_A];
+        if (this.MTI >= exports.N) {
+            let kk;
+            if (this.MTI === exports.N + 1) {
+                this.initializeRandomGenerator(5489);
+            }
+            for (kk = 0; kk < exports.N - exports.M; kk += 1) {
+                y = (this.MT[kk] & exports.UPPER_MASK) | (this.MT[kk + 1] & exports.LOWER_MASK);
+                this.MT[kk] = this.MT[kk + exports.M] ^ (y >> 1) ^ mag01[y & 0x1];
+            }
+            while (kk < exports.N - 1) {
+                y = (this.MT[kk] & exports.UPPER_MASK) | (this.MT[kk + 1] & exports.LOWER_MASK);
+                this.MT[kk] = this.MT[kk + exports.M - exports.N] ^ (y >> 1) ^ mag01[y & 0x1];
+                kk += 1;
+            }
+            y = (this.MT[exports.N - 1] & exports.UPPER_MASK) | (this.MT[0] & exports.LOWER_MASK);
+            this.MT[exports.N - 1] = this.MT[exports.M - 1] ^ (y >> 1) ^ mag01[y & 0x1];
+            this.MTI = 0;
+        }
+        this.MTI += 1;
+        y = this.MT[this.MTI];
+        y ^= (y >> 11);
+        y ^= (y << 7) & 0x9d2c5680;
+        y ^= (y << 15) & 0xefc60000;
+        y ^= (y >> 18);
+        return y >> 0;
+    }
+    /**
+     * Returns a non-negative random integer value, within
+     * the range of Int31.
+     *
+     * @public
+     * @function generateRandomInteger31
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandomInteger31() {
+        return this.generateRandomInteger() >> 1;
+    }
+    /**
+     * Returns a non-negative random real number between 0 and 1.
+     *
+     * @public
+     * @function generateRandomReal
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandomReal() {
+        return this.generateRandomInteger() * (1.0 / 4294967295.0);
+    }
+    /**
+     * Returns a non-negative random number between 0 and 1.
+     *
+     * @public
+     * @function generateRandom
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandom() {
+        return this.generateRandomInteger() * (1.0 / 4294967296.0);
+    }
+    /**
+     * Returns a non-negative random real number between 0 and 1.
+     *
+     * @public
+     * @function generateRandomReal3
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandomReal3() {
+        return (this.generateRandomInteger() + 0.5) * (1.0 / 4294967296.0);
+    }
+    /**
+     * Returns a non-negative random rumber with a resolution
+     * of 53 bits.
+     *
+     * @public
+     * @function generateRandomReal53BitResolution
+     * @memberof MersenneTwisterAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandomReal53BitResolution() {
+        const a = this.generateRandomInteger() >> 5;
+        const b = this.generateRandomInteger() >> 6;
+        return (a * 671084464.0 + b) * (1.0 / 9007199254740992.0);
+    }
+}
+exports.MersenneTwisterAlgorithm = MersenneTwisterAlgorithm;
 
 
 /***/ })
