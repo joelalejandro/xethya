@@ -6,8 +6,8 @@
   "scripts": {
     "build": "webpack",
     "type-check": "tsc",
-    "test": "mocha --reporter spec --require ts-node/register src/**/*.test.ts",
-    "coverage": "nyc npm run test"
+    "test": "nyc mocha --reporter spec --require ts-node/register src/**/*.test.ts",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "keywords": [
     "xethya",
