@@ -1,0 +1,35 @@
+{
+  "name": "xethya",
+  "version": "0.0.0",
+  "description": "A framework to build role-playing games.",
+  "main": "dist/xethya.js",
+  "scripts": {
+    "build": "webpack",
+    "type-check": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xethya",
+    "game",
+    "development",
+    "game",
+    "framework"
+  ],
+  "author": "Joel A. Villarreal Bertoldi",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/preset-typescript": "^7.0.0-beta.40",
+    "babel-loader": "8.0.0-beta.0",
+    "typescript": "^2.7.2",
+    "webpack": "3.11.0",
+    "webpack-cli": "^2.0.9"
+  },
+  "dependencies": {
+    "eventemitter3": "^3.0.1"
+  }
+}
