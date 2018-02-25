@@ -4,7 +4,7 @@ module.exports = {
   // Change to your "entry-point".
   entry: './src/xethya',
   output: {
-    path: path.resolve(__dirname, 'bundle'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'xethya.js'
   },
   resolve: {

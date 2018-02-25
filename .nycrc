@@ -1,0 +1,22 @@
+{
+  "extension": [
+    ".ts"
+  ],
+  "require": [
+    "ts-node/register"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.d.ts",
+    "src/xethya.ts",
+    "**/*-error.ts"
+  ],
+  "reporter": [
+    "text",
+    "json"
+  ],
+  "all": true
+}
