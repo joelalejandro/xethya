@@ -6,6 +6,7 @@ before_install:
 node_js:
   - '8'
 install:
+  - yarn global add codecov
   - yarn
 script:
   - yarn test
@@ -14,4 +15,4 @@ cache:
   directories:
     - node_modules  
 after_success:
-  - npm run coveralls
+  - codecov
