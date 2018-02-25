@@ -15,7 +15,7 @@ class WithEvents extends Eventable {
   }
 }
 
-describe('#Eventable', () => {
+describe('Base.Eventable', () => {
   it('should trigger events', (done) => {
     const onEventDone = () => {
       done();
