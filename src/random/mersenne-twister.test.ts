@@ -8,7 +8,7 @@ chai.use(spies);
 
 import { MersenneTwisterAlgorithm, M, N } from './mersenne-twister';
 
-describe('MersenneTwister', () => {
+describe('Random.MersenneTwister', () => {
 
   it('should contain a recommendsToReinstantiate static method with a boolean return type', () => {
     expect(MersenneTwisterAlgorithm.recommendsToReinstantiate).to.be.a('function');
