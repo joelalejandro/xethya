@@ -7,7 +7,7 @@ const p = 246721;
 const q = 137181;
 const seedNumber = 248165;
 
-describe('BlumBlumShubAlgorithm', () => {
+describe('Random.BlumBlumShubAlgorithm', () => {
 
   it('should provide a RecommendsToReinstantiate method', () => {
     expect(BlumBlumShubAlgorithm.recommendsToReinstantiate).to.be.a('function');

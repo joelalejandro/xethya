@@ -79,14 +79,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventemitter3_1 = __webpack_require__(3);
-class Eventable extends eventemitter3_1.EventEmitter {
-    constructor() {
-        super();
+const assertion_error_1 = __importDefault(__webpack_require__(7));
+function assert(condition, message) {
+    if (!condition) {
+        throw new assertion_error_1.default(message);
     }
 }
-exports.default = Eventable;
+exports.default = assert;
 
 
 /***/ }),
@@ -95,17 +98,14 @@ exports.default = Eventable;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-const assertion_error_1 = __importDefault(__webpack_require__(5));
-function assert(condition, message) {
-    if (!condition) {
-        throw new assertion_error_1.default(message);
+const eventemitter3_1 = __webpack_require__(3);
+class Eventable extends eventemitter3_1.EventEmitter {
+    constructor() {
+        super();
     }
 }
-exports.default = assert;
+exports.default = Eventable;
 
 
 /***/ }),
@@ -125,16 +125,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventable_1 = __importDefault(__webpack_require__(0));
+const eventable_1 = __importDefault(__webpack_require__(1));
 exports.Eventable = eventable_1.default;
 const object_1 = __importDefault(__webpack_require__(4));
 exports.XethyaObject = object_1.default;
-const assert_1 = __importDefault(__webpack_require__(1));
-exports.assert = assert_1.default;
-const BlumBlumShub = __importStar(__webpack_require__(6));
+const BlumBlumShub = __importStar(__webpack_require__(5));
 exports.BlumBlumShub = BlumBlumShub;
-const MersenneTwister = __importStar(__webpack_require__(7));
+const MersenneTwister = __importStar(__webpack_require__(6));
 exports.MersenneTwister = MersenneTwister;
+/**
+ * @package Utils
+ */
+const assert_1 = __importDefault(__webpack_require__(0));
+exports.assert = assert_1.default;
+const range_1 = __importDefault(__webpack_require__(8));
+exports.Range = range_1.default;
 
 
 /***/ }),
@@ -490,7 +495,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventable_1 = __importDefault(__webpack_require__(0));
+const eventable_1 = __importDefault(__webpack_require__(1));
 class XethyaObject extends eventable_1.default {
     constructor() {
         super();
@@ -501,22 +506,6 @@ exports.default = XethyaObject;
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class AssertionError extends Error {
-    constructor(message) {
-        super();
-        this.message = `[AssertionError] An assertion has failed${message ? (': ' + message) : ''}`;
-    }
-}
-exports.default = AssertionError;
-
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -635,7 +624,7 @@ exports.BlumBlumShubAlgorithm = BlumBlumShubAlgorithm;
 
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -644,7 +633,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const assert_1 = __importDefault(__webpack_require__(1));
+const assert_1 = __importDefault(__webpack_require__(0));
 /**
  * @ignore
  */
@@ -882,6 +871,107 @@ class MersenneTwisterAlgorithm {
     }
 }
 exports.MersenneTwisterAlgorithm = MersenneTwisterAlgorithm;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class AssertionError extends Error {
+    constructor(message) {
+        super();
+        this.message = `[AssertionError] An assertion has failed${message ? (': ' + message) : ''}`;
+    }
+}
+exports.default = AssertionError;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(__webpack_require__(0));
+class Range {
+    constructor(lowerBound, upperBound) {
+        assert_1.default(lowerBound !== upperBound, 'Range#constructor: lowerBound and upperBound cannot be equal');
+        this.lowerBound = Math.min(lowerBound, upperBound);
+        this.upperBound = Math.max(lowerBound, upperBound);
+    }
+    /**
+     * Checks if a value is in the defined range.
+     *
+     * @public
+     * @function
+     * @param  {Number} value - Value to compare.
+     * @return {Boolean} true if in range, false otherwise.
+     */
+    includes(value) {
+        return this.lowerBound <= value && value <= this.upperBound;
+    }
+    /**
+     * Converts the Range object to a string representation.
+     *
+     * @public
+     * @function
+     * @return {String}
+     */
+    toString() {
+        return `${this.lowerBound.toString()} ~ ${this.upperBound.toString()}`;
+    }
+    /**
+     * Creates a Range from an array of two numbers.
+     *
+     * @public
+     * @static
+     * @function
+     * @param  {Array.<Number>} values - Boundaries of the range.
+     * @return {Range}
+     */
+    static fromArray(values) {
+        const errorMessage = 'Range#fromArray: values must be an Array of 2 numerical elements';
+        assert_1.default(values.length === 2, errorMessage);
+        return new Range(values[0], values[1]);
+    }
+    /**
+     * Creates a Range from a string-based notation.
+     *
+     * @public
+     * @static
+     * @function
+     * @param  {String} notedRange - A string representation of a Range,
+     *                  using delimiters. Accepted formats: x,y x;y x:y x~y.
+     * @return {Range}
+     */
+    static fromNotation(notedRange) {
+        const errorMessage = 'Range#fromNotation: notedRange must use one of these formats: x,y x;y x:y x~y';
+        assert_1.default(notedRange !== undefined, errorMessage);
+        assert_1.default(typeof notedRange === 'string', errorMessage);
+        let range;
+        const allowedDelimiters = [',', ';', ':', '~'];
+        assert_1.default(allowedDelimiters.some(delimiter => notedRange.includes(delimiter)), errorMessage);
+        let delimiterFound = false;
+        while (!delimiterFound) {
+            const delimiter = allowedDelimiters.shift();
+            delimiterFound = notedRange.includes(delimiter);
+            if (delimiterFound) {
+                const data = notedRange.split(delimiter).map(d => d.trim());
+                assert_1.default(data.length === 2, errorMessage);
+                range = Range.fromArray(data.map(d => Number(d)));
+            }
+        }
+        return range;
+    }
+}
+exports.default = Range;
 
 
 /***/ })

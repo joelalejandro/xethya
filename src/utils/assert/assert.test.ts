@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import assert from './assert';
 import AssertionError from './assertion-error';
 
-describe('Base.assert', () => {
+describe('Utils.assert', () => {
   it('should run silent if condition is true', () => {
     expect(() => {
       assert(true, 'Should not see me')
