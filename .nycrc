@@ -13,7 +13,8 @@
     "**/*.d.ts",
     "src/xethya.ts",
     "**/*-error.ts",
-    "**/*.i.ts"
+    "**/*.i.ts",
+    "**/*.t.ts"
   ],
   "reporter": [
     "text",
