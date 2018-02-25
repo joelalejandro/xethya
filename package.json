@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "type-check": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter spec --require ts-node/register src/**/*.test.ts"
   },
   "keywords": [
     "xethya",
