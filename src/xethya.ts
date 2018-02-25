@@ -1,7 +1,6 @@
 import Eventable from './base/eventable';
 import XethyaObject from './base/object';
 import assert from './utils/assert/assert';
-import * as BlumBlumShub from './random/blum-blum-shub';
 
 /**
  * @package Base
@@ -12,9 +11,13 @@ export {
   assert,
 };
 
+import * as BlumBlumShub from './random/blum-blum-shub';
+import * as MersenneTwister from './random/mersenne-twister';
+
 /**
  * @package Random
  */ 
 export {
   BlumBlumShub,
+  MersenneTwister,
 };
