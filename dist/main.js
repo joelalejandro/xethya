@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,7 +83,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const assertion_error_1 = __importDefault(__webpack_require__(7));
+const assertion_error_1 = __importDefault(__webpack_require__(12));
 function assert(condition, message) {
     if (!condition) {
         throw new assertion_error_1.default(message);
@@ -99,7 +99,276 @@ exports.default = assert;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventemitter3_1 = __webpack_require__(3);
+/**
+ * Default constant value for setting up the BBS PRNG.
+ * P must be a prime number.
+ *
+ * @public
+ * @type {Number}
+ * @const P
+ * @static
+ */
+exports.P = 87566873;
+/**
+ * Default constant value for setting up the BBS PRNG.
+ * Q must be a prime number.
+ *
+ * @public
+ * @const Q
+ * @static
+ * @type {Number}
+ */
+exports.Q = 5631179;
+/**
+ * A list of default seed values, tested to be evenly distributed.
+
+ * @public
+ * @const DefaultSeeds
+ * @static
+ * @type {Array.<Number>}
+ * @see  http://wiki.fib.upc.es/sim/index.php/Blum_Blum_Shub#Tests
+ */
+exports.DefaultSeeds = [193945, 740191, 191];
+/**
+ * Instantiates a Blum Blum Shub PRNG.
+ *
+ * @public
+ * @class BlumBlumShubAlgorithm
+ */
+class BlumBlumShubAlgorithm {
+    /**
+     * Initializes the generator.
+     *
+     * @param  {Number} p    A prime value (defaults to P).
+     * @param  {Number} q    A prime value (defaults to Q).
+     * @param  {Number} seedNumber A seed number to feed the generator (defaults to any value
+     *                       in DefaultSeeds).
+     * @constructor
+     */
+    constructor(settings) {
+        this.settings = settings;
+        const defaults = {
+            p: exports.P,
+            q: exports.Q,
+            seedNumber: null,
+        };
+        this.settings = Object.assign({}, defaults, settings);
+        let seedNumber = this.settings.seedNumber;
+        const p = this.settings.p;
+        const q = this.settings.q;
+        if (seedNumber) {
+            seedNumber = Math.abs(seedNumber);
+        }
+        else {
+            seedNumber = exports.DefaultSeeds[Math.floor(Math.random() * (exports.DefaultSeeds.length))];
+        }
+        this.seedNumber = seedNumber;
+        this.randomIndex = seedNumber;
+        this.M = p * q;
+        this.P = p;
+        this.Q = q;
+    }
+    /**
+     * Determines if the generator works better by being reinstantiated after
+     * every generated number.
+     *
+     * @public
+     * @static
+     * @function recommendsToReinstantiate
+     * @memberof BlumBlumShubAlgorithm
+     * @return {Boolean}
+     */
+    static recommendsToReinstantiate() {
+        return true;
+    }
+    recommendsToReinstantiate() {
+        return BlumBlumShubAlgorithm.recommendsToReinstantiate();
+    }
+    /**
+     * Generates a pseudo-random number and updates the seed for a next roll.
+     * Number is always between 0 and 1.
+     *
+     * @public
+     * @function generateRandom
+     * @memberof BlumBlumShubAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandom() {
+        const r = this.randomIndex * this.randomIndex % this.M;
+        this.randomIndex = r;
+        return Math.abs(r / this.M);
+    }
+    /**
+     * Same as `generateRandom()`, but converts the number to an Integer.
+     *
+     * @public
+     * @function generateRandomInteger
+     * @memberof BlumBlumShubAlgorithm
+     * @instance
+     * @return {Number}
+     */
+    generateRandomInteger() {
+        return Number(this.generateRandom().toString().replace(/\./, ''));
+    }
+}
+exports.BlumBlumShubAlgorithm = BlumBlumShubAlgorithm;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * The core class of the package. The Dice class allows to configure a single,
+ * positive, integer random throw.
+ *
+ * By default, the chance throw uses the Blum Blum Shub algorithm contained in
+ * `xethya-extension-random-bbs`, which provides a randomizer with an equal chance
+ * of rolling numbers in all of the range.
+ *
+ * You can use the `xethya-extension-random-mtw` package to use the chance throw
+ * with the Mersenne-Twister algorithm, which provides an average distribution
+ * of 65-35-0 (you'll never get numbers larger than 66).
+ *
+ * @example
+ * ```js
+ * // Roll a single d6.
+ * const d6 = new Dice();
+ * d6.roll(); // A number between 1 and 6.
+ *
+ * // Roll a single d4.
+ * const d4 = new Dice({ faces: 4 });
+ * d4.roll();
+ *
+ * // Alternative, static syntax. Will always use Blum Blum Shub.
+ * Dice.rollD(4);
+ *
+ * // Create a dice, roll it, then change its size.
+ * const mutantDice = new Dice({ faces: 10 });
+ * mutantDice.roll(); // A number between 1 and 10.
+ * mutantDice.faces = 4;
+ * mutantDice.roll(); // A number between 1 and 4.
+ * ```
+ *
+ * @class Dice
+ * @extends {XethyaObject}
+ *
+ * @param {Object} settings - A configuration object.
+ * @param {Number} [settings.number = 6] - How many faces the dice has, or
+ *                 the maximum number the roll can be.
+ * @param {Class}  [settings.randomStrategy = BlumBlumShubAlgorithm] - The strategy to use
+ *                 to generate the numbers. Must be a class that implements a `generateRandom()`
+ *                 method.
+ * @param {Object} [settings.randomStrategySettings = {}] - Specific configuration for the
+ *                 randomizer. Most strategies should have default settings so you don't need
+ *                 to use this, usually.
+ *
+ * @property {Number} faces - Gets or sets how many faces the dice has. Must be at least 2.
+ * @property {Class} randomStrategy - Contains the reference to the pRNG used by the dice.
+ * @property {Object} randomStrategySettings - Contains the pRNG's settings.
+ *
+ * @uses BlumBlumShubAlgorithm
+ */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const randomizer_1 = __importDefault(__webpack_require__(6));
+const blum_blum_shub_1 = __webpack_require__(1);
+const object_1 = __importDefault(__webpack_require__(4));
+const assert_1 = __importDefault(__webpack_require__(0));
+class Dice extends object_1.default {
+    constructor({ faces = 6, randomStrategy = blum_blum_shub_1.BlumBlumShubAlgorithm, randomStrategySettings = {} } = {}) {
+        super();
+        this._faces = 6;
+        this.faces = faces;
+        this.setRandomStrategy(randomStrategy, randomStrategySettings);
+        this._mustPreservePrng = randomStrategy.recommendsToReinstantiate();
+    }
+    /**
+     * Reinitializes the randomizer according to the strategy's recommendation.
+     *
+     * @private
+     * @method _regenerateRandomStrategyIfNeeded
+     */
+    _regenerateRandomStrategyIfNeeded() {
+        if (!this._mustPreservePrng) {
+            this._initializeRandomizer();
+        }
+    }
+    /**
+     * Instantiates the randomizer.
+     *
+     * @private
+     * @method _initializeRandomizer
+     */
+    _initializeRandomizer() {
+        this._randomizer = new randomizer_1.default(this.randomStrategy).create(this.randomStrategySettings);
+    }
+    roll() {
+        this.emit('before:roll');
+        const random = this._randomizer.generateRandom();
+        const result = Math.ceil(random * this.faces);
+        this._regenerateRandomStrategyIfNeeded();
+        this.emit('roll', result);
+        return result;
+    }
+    /**
+     * Sets a new random strategy for the dice.
+     *
+     * @public
+     * @method
+     * @param {Class}  randomStrategy - The strategy to use to generate the numbers.
+     *                 Must be a class that implements a `generateRandom()` method.
+     * @param {Object} [randomStrategySettings = {}] - Specific configuration for the
+     *                 randomizer. Most strategies should have default settings so you don't need
+     *                 to use this, usually.
+     */
+    setRandomStrategy(randomStrategy, randomStrategySettings = {}) {
+        this.randomStrategy = randomStrategy;
+        this.randomStrategySettings = randomStrategySettings;
+        this._initializeRandomizer();
+    }
+    get faces() {
+        return this._faces;
+    }
+    /**
+     * @throws {Error} if faces isn't a Number or it's less than 2.
+     */
+    set faces(faces) {
+        assert_1.default(faces >= 2, 'Dice#setFaces: a dice must have at least two faces');
+        this._faces = faces;
+    }
+    get randomStrategy() {
+        return this._randomStrategy;
+    }
+    set randomStrategy(randomStrategy) {
+        this._randomStrategy = randomStrategy;
+    }
+    get randomStrategySettings() {
+        return this._randomStrategySettings;
+    }
+    set randomStrategySettings(randomStrategySettings) {
+        this._randomStrategySettings = randomStrategySettings;
+    }
+    static rollD(faces) {
+        return new Dice({ faces }).roll();
+    }
+}
+exports.Dice = Dice;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const eventemitter3_1 = __webpack_require__(11);
 class Eventable extends eventemitter3_1.EventEmitter {
     constructor() {
         super();
@@ -109,7 +378,222 @@ exports.default = Eventable;
 
 
 /***/ }),
-/* 2 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const eventable_1 = __importDefault(__webpack_require__(3));
+class XethyaObject extends eventable_1.default {
+    constructor() {
+        super();
+    }
+}
+exports.default = XethyaObject;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(__webpack_require__(0));
+class Range {
+    constructor(lowerBound, upperBound) {
+        assert_1.default(lowerBound !== upperBound, 'Range#constructor: lowerBound and upperBound cannot be equal');
+        this.lowerBound = Math.min(lowerBound, upperBound);
+        this.upperBound = Math.max(lowerBound, upperBound);
+    }
+    /**
+     * Checks if a value is in the defined range.
+     *
+     * @public
+     * @function
+     * @param  {Number} value - Value to compare.
+     * @return {Boolean} true if in range, false otherwise.
+     */
+    includes(value) {
+        return this.lowerBound <= value && value <= this.upperBound;
+    }
+    /**
+     * Converts the Range object to a string representation.
+     *
+     * @public
+     * @function
+     * @return {String}
+     */
+    toString() {
+        return `${this.lowerBound.toString()} ~ ${this.upperBound.toString()}`;
+    }
+    /**
+     * Creates a Range from an array of two numbers.
+     *
+     * @public
+     * @static
+     * @function
+     * @param  {Array.<Number>} values - Boundaries of the range.
+     * @return {Range}
+     */
+    static fromArray(values) {
+        const errorMessage = 'Range#fromArray: values must be an Array of 2 numerical elements';
+        assert_1.default(values.length === 2, errorMessage);
+        return new Range(values[0], values[1]);
+    }
+    /**
+     * Creates a Range from a string-based notation.
+     *
+     * @public
+     * @static
+     * @function
+     * @param  {String} notedRange - A string representation of a Range,
+     *                  using delimiters. Accepted formats: x,y x;y x:y x~y.
+     * @return {Range}
+     */
+    static fromNotation(notedRange) {
+        const errorMessage = 'Range#fromNotation: notedRange must use one of these formats: x,y x;y x:y x~y';
+        assert_1.default(notedRange !== undefined, errorMessage);
+        assert_1.default(typeof notedRange === 'string', errorMessage);
+        let range;
+        const allowedDelimiters = [',', ';', ':', '~'];
+        assert_1.default(allowedDelimiters.some(delimiter => notedRange.includes(delimiter)), errorMessage);
+        let delimiterFound = false;
+        while (!delimiterFound) {
+            const delimiter = allowedDelimiters.shift();
+            delimiterFound = notedRange.includes(delimiter);
+            if (delimiterFound) {
+                const data = notedRange.split(delimiter).map(d => d.trim());
+                assert_1.default(data.length === 2, errorMessage);
+                range = Range.fromArray(data.map(d => Number(d)));
+            }
+        }
+        return range;
+    }
+}
+exports.default = Range;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class Randomizer {
+    constructor(constructorFunction) {
+        this.constructorFunction = constructorFunction;
+    }
+    create(randomizerSettings) {
+        return new this.constructorFunction(randomizerSettings);
+    }
+}
+exports.default = Randomizer;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * xethya-dice
+ *
+ * Copyright © 2016 Joel A. Villarreal Bertoldi. All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.txt file in the root directory of this source tree.
+ */
+const dice_1 = __webpack_require__(2);
+const dice_throw_result_1 = __importDefault(__webpack_require__(8));
+const blum_blum_shub_1 = __webpack_require__(1);
+const assert_1 = __importDefault(__webpack_require__(0));
+;
+class DiceThrow {
+    constructor({ numberOfDices = 2, maxNumber = 6, randomStrategy = blum_blum_shub_1.BlumBlumShubAlgorithm, randomStrategySettings = {} } = {}) {
+        assert_1.default(maxNumber >= 2, 'DiceThrow#constructor: expected `maxNumber` to be at least 2.');
+        this.dices = [];
+        for (let d = 0; d < numberOfDices; d += 1) {
+            this.dices.push(new dice_1.Dice({
+                faces: maxNumber,
+                randomStrategy: randomStrategy,
+                randomStrategySettings
+            }));
+        }
+    }
+    roll() {
+        let dtr = new dice_throw_result_1.default();
+        dtr.rolls = this.dices.map(d => d.roll());
+        return dtr;
+    }
+}
+exports.DiceThrow = DiceThrow;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class DiceThrowResult {
+    constructor() {
+        this.rolls = [];
+    }
+    getRollSum() {
+        return this.rolls.reduce((m, n) => m + n);
+    }
+}
+exports.default = DiceThrowResult;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const dice_throw_result_1 = __importDefault(__webpack_require__(8));
+const allowedThrowTypes = [
+    "failure" /* FAILURE */,
+    "success" /* SUCCESS */,
+    "criticalSuccess" /* CRITICAL_SUCCESS */
+];
+class ChanceThrowResult extends dice_throw_result_1.default {
+    constructor(throwResult) {
+        super();
+        this.rolls = this.rolls.concat(throwResult.rolls);
+    }
+    get throwType() {
+        return this._throwType;
+    }
+    set throwType(value) {
+        this._throwType = value;
+    }
+}
+exports.default = ChanceThrowResult;
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -125,25 +609,47 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventable_1 = __importDefault(__webpack_require__(1));
+const eventable_1 = __importDefault(__webpack_require__(3));
 exports.Eventable = eventable_1.default;
 const object_1 = __importDefault(__webpack_require__(4));
 exports.XethyaObject = object_1.default;
-const BlumBlumShub = __importStar(__webpack_require__(5));
-exports.BlumBlumShub = BlumBlumShub;
-const MersenneTwister = __importStar(__webpack_require__(6));
-exports.MersenneTwister = MersenneTwister;
+// ----------------------------------------------------------------------------
 /**
  * @package Utils
  */
 const assert_1 = __importDefault(__webpack_require__(0));
 exports.assert = assert_1.default;
-const range_1 = __importDefault(__webpack_require__(8));
+const range_1 = __importDefault(__webpack_require__(5));
 exports.Range = range_1.default;
+// ----------------------------------------------------------------------------
+/**
+ * @package Random
+ */
+const BlumBlumShub = __importStar(__webpack_require__(1));
+exports.BlumBlumShub = BlumBlumShub;
+const MersenneTwister = __importStar(__webpack_require__(13));
+exports.MersenneTwister = MersenneTwister;
+const randomizer_1 = __importDefault(__webpack_require__(6));
+exports.Randomizer = randomizer_1.default;
+// ----------------------------------------------------------------------------
+/**
+ * @package Dice
+ */
+const dice_1 = __webpack_require__(2);
+exports.Dice = dice_1.Dice;
+const dice_throw_1 = __webpack_require__(7);
+exports.DiceThrow = dice_throw_1.DiceThrow;
+const chance_throw_1 = __webpack_require__(14);
+exports.ChanceThrow = chance_throw_1.ChanceThrow;
+const chance_throw_result_1 = __importDefault(__webpack_require__(9));
+exports.ChanceThrowResult = chance_throw_result_1.default;
+const coin_flip_1 = __webpack_require__(15);
+exports.CoinFlip = coin_flip_1.CoinFlip;
+// ----------------------------------------------------------------------------
 
 
 /***/ }),
-/* 3 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -486,145 +992,23 @@ if (true) {
 
 
 /***/ }),
-/* 4 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventable_1 = __importDefault(__webpack_require__(1));
-class XethyaObject extends eventable_1.default {
-    constructor() {
+class AssertionError extends Error {
+    constructor(message) {
         super();
+        this.message = `[AssertionError] An assertion has failed${message ? (': ' + message) : ''}`;
     }
 }
-exports.default = XethyaObject;
+exports.default = AssertionError;
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Default constant value for setting up the BBS PRNG.
- * P must be a prime number.
- *
- * @public
- * @type {Number}
- * @const P
- * @static
- */
-exports.P = 87566873;
-/**
- * Default constant value for setting up the BBS PRNG.
- * Q must be a prime number.
- *
- * @public
- * @const Q
- * @static
- * @type {Number}
- */
-exports.Q = 5631179;
-/**
- * A list of default seed values, tested to be evenly distributed.
-
- * @public
- * @const DefaultSeeds
- * @static
- * @type {Array.<Number>}
- * @see  http://wiki.fib.upc.es/sim/index.php/Blum_Blum_Shub#Tests
- */
-exports.DefaultSeeds = [193945, 740191, 191];
-/**
- * Instantiates a Blum Blum Shub PRNG.
- *
- * @public
- * @class BlumBlumShubAlgorithm
- */
-class BlumBlumShubAlgorithm {
-    /**
-     * Initializes the generator.
-     *
-     * @param  {Number} p    A prime value (defaults to P).
-     * @param  {Number} q    A prime value (defaults to Q).
-     * @param  {Number} seedNumber A seed number to feed the generator (defaults to any value
-     *                       in DefaultSeeds).
-     * @constructor
-     */
-    constructor(settings) {
-        const defaults = {
-            p: exports.P,
-            q: exports.Q,
-            seedNumber: null,
-        };
-        this.settings = Object.assign({}, defaults, settings);
-        let seedNumber = this.settings.seedNumber;
-        const p = this.settings.p;
-        const q = this.settings.q;
-        if (seedNumber) {
-            seedNumber = Math.abs(seedNumber);
-        }
-        else {
-            seedNumber = exports.DefaultSeeds[Math.floor(Math.random() * (exports.DefaultSeeds.length))];
-        }
-        this.seedNumber = seedNumber;
-        this.randomIndex = seedNumber;
-        this.M = p * q;
-        this.P = p;
-        this.Q = q;
-    }
-    /**
-     * Determines if the generator works better by being reinstantiated after
-     * every generated number.
-     *
-     * @public
-     * @static
-     * @function recommendsToReinstantiate
-     * @memberof BlumBlumShubAlgorithm
-     * @return {Boolean}
-     */
-    static recommendsToReinstantiate() {
-        return false;
-    }
-    /**
-     * Generates a pseudo-random number and updates the seed for a next roll.
-     * Number is always between 0 and 1.
-     *
-     * @public
-     * @function generateRandom
-     * @memberof BlumBlumShubAlgorithm
-     * @instance
-     * @return {Number}
-     */
-    generateRandom() {
-        const r = this.randomIndex * this.randomIndex % this.M;
-        this.randomIndex = r;
-        return Math.abs(r / this.M);
-    }
-    /**
-     * Same as `generateRandom()`, but converts the number to an Integer.
-     *
-     * @public
-     * @function generateRandomInteger
-     * @memberof BlumBlumShubAlgorithm
-     * @instance
-     * @return {Number}
-     */
-    generateRandomInteger() {
-        return Number(this.generateRandom().toString().replace(/\./, ''));
-    }
-}
-exports.BlumBlumShubAlgorithm = BlumBlumShubAlgorithm;
-
-
-/***/ }),
-/* 6 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -665,7 +1049,8 @@ class MersenneTwisterAlgorithm {
      * @param  {Object} settings - Configuration for the generator:
      *         - seedNumber: The number for the seed.
      */
-    constructor(settings = {}) {
+    constructor(settings) {
+        this.settings = settings;
         let seedNumber;
         const defaults = {
             seedNumber: undefined,
@@ -697,6 +1082,9 @@ class MersenneTwisterAlgorithm {
      */
     static recommendsToReinstantiate() {
         return false;
+    }
+    recommendsToReinstantiate() {
+        return MersenneTwisterAlgorithm.recommendsToReinstantiate();
     }
     /**
      * Loads the initialization vector required for the algorithm,
@@ -874,104 +1262,168 @@ exports.MersenneTwisterAlgorithm = MersenneTwisterAlgorithm;
 
 
 /***/ }),
-/* 7 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-Object.defineProperty(exports, "__esModule", { value: true });
-class AssertionError extends Error {
-    constructor(message) {
-        super();
-        this.message = `[AssertionError] An assertion has failed${message ? (': ' + message) : ''}`;
-    }
-}
-exports.default = AssertionError;
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/**
+ * A d100 thrower. Useful for probability calculation. A throw is classified
+ * with a roll score map, where the defaults are:
+ *
+ * - 1-20: Failure
+ * - 21-90: Success
+ * - 91-100: Critical success
+ *
+ * You can move around these ranges in order to change the roll's difficulty.
+ * For instance, a very difficult throw would be one like this:
+ *
+ * - 1-80: Failure
+ * - 81-98: Success
+ * - 99-100: Critical success
+ *
+ * Notice that the success rate ranges cannot overlap, as the result resolver
+ * won't be able to distinguish between rates otherwise.
+ *
+ * As ChanceThrow is an extension of Dice, it's regulated by the same randomizer
+ * rules.
+ *
+ * @example
+ * ```js
+ * // Default settings.
+ * const d100 = new ChanceThrow();
+ * d100.roll();
+ *
+ * // A very difficult throw.
+ * const d100Hard = new ChanceThrow({
+ *   rollScores: {
+ *     failure: new Range(1, 80),
+ *     success: new Range(81, 98),
+ *     criticalSuccess: new Range(99, 100),
+ *   }
+ * });
+ * d100Hard.roll();
+ *
+ * // A chance throw of d66. Useful for capping the success rate
+ * // without changing the roll scores map.
+ * import { MersenneTwisterAlgorithm } from 'xethya-extension-random-mtw';
+ *
+ * const d66 = new ChanceThrow({
+ *   randomStrategy: MersenneTwisterAlgorithm,
+ * });
+ * d66.roll();
+ * ```
+ *
+ * @class ChanceThrow
+ * @extends DiceThrow
+ *
+ * @param {Object} [settings] - Configuration object for the throw.
+ * @param {Object} [settings.rollScores] - A map of ranges to determine the success rate of
+ *                 the chance throw's result.
+ * @param {Range}  [settings.rollScores.failure = new Range(1, 20)] - A Range to describe a
+ *                 failed throw. This range can be used to apply penalizations to the player.
+ * @param {Range}  [settings.rollScores.success = new Range(21, 90)] - A Range to describe a
+ *                 success throw. This range can be used to give the player a reward.
+ * @param {Range}  [settings.rollScores.criticalSuccess = new Range(91, 100)] - A Range to
+ *                 describe a critical success throw. This result means the throw went even
+ *                 better than normal, so a major reward can be given.
+ * @param {Class}  [settings.randomStrategy = BlumBlumShubAlgorithm] - The strategy to use
+ *                 to generate the numbers. Must be a class that implements a `generateRandom()`
+ *                 method.
+ *
+ * @see https://github.com/xethya/xethya-extension-random-bbs/wiki/Blum-Blum-Shub-distributions
+ * @see https://github.com/xethya/xethya-extension-random-mtw
+ *
+ * @uses Range
+ * @uses BlumBlumShubAlgorithm
+ * @uses ChanceThrowResult
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const assert_1 = __importDefault(__webpack_require__(0));
-class Range {
-    constructor(lowerBound, upperBound) {
-        assert_1.default(lowerBound !== upperBound, 'Range#constructor: lowerBound and upperBound cannot be equal');
-        this.lowerBound = Math.min(lowerBound, upperBound);
-        this.upperBound = Math.max(lowerBound, upperBound);
+const range_1 = __importDefault(__webpack_require__(5));
+const blum_blum_shub_1 = __webpack_require__(1);
+const dice_throw_1 = __webpack_require__(7);
+const chance_throw_result_1 = __importDefault(__webpack_require__(9));
+class ChanceThrow extends dice_throw_1.DiceThrow {
+    constructor(settings = { randomStrategy: undefined }) {
+        super({
+            numberOfDices: 1,
+            maxNumber: 100,
+            randomStrategy: settings.randomStrategy || blum_blum_shub_1.BlumBlumShubAlgorithm,
+            randomStrategySettings: {
+                seedNumber: Number(Math.random().toString().replace(/\./, ''))
+            }
+        });
+        const defaults = {
+            rollScores: {
+                failure: new range_1.default(1, 20),
+                success: new range_1.default(21, 90),
+                criticalSuccess: new range_1.default(91, 100)
+            }
+        };
+        this.settings = Object.assign({}, settings, defaults);
     }
     /**
-     * Checks if a value is in the defined range.
+     * Returns the range for a success rate.
      *
-     * @public
+     * @private
      * @function
-     * @param  {Number} value - Value to compare.
-     * @return {Boolean} true if in range, false otherwise.
+     * @param {string} key - The success rate to lookup.
+     * @return {Range}
      */
-    includes(value) {
-        return this.lowerBound <= value && value <= this.upperBound;
+    _range(key) {
+        return this.settings.rollScores[key];
     }
     /**
-     * Converts the Range object to a string representation.
+     * Determines the success rate of the throw.
      *
-     * @public
+     * @private
      * @function
+     * @param {Number} rollSum - The results of the throw.
      * @return {String}
      */
-    toString() {
-        return `${this.lowerBound.toString()} ~ ${this.upperBound.toString()}`;
-    }
-    /**
-     * Creates a Range from an array of two numbers.
-     *
-     * @public
-     * @static
-     * @function
-     * @param  {Array.<Number>} values - Boundaries of the range.
-     * @return {Range}
-     */
-    static fromArray(values) {
-        const errorMessage = 'Range#fromArray: values must be an Array of 2 numerical elements';
-        assert_1.default(values.length === 2, errorMessage);
-        return new Range(values[0], values[1]);
-    }
-    /**
-     * Creates a Range from a string-based notation.
-     *
-     * @public
-     * @static
-     * @function
-     * @param  {String} notedRange - A string representation of a Range,
-     *                  using delimiters. Accepted formats: x,y x;y x:y x~y.
-     * @return {Range}
-     */
-    static fromNotation(notedRange) {
-        const errorMessage = 'Range#fromNotation: notedRange must use one of these formats: x,y x;y x:y x~y';
-        assert_1.default(notedRange !== undefined, errorMessage);
-        assert_1.default(typeof notedRange === 'string', errorMessage);
-        let range;
-        const allowedDelimiters = [',', ';', ':', '~'];
-        assert_1.default(allowedDelimiters.some(delimiter => notedRange.includes(delimiter)), errorMessage);
-        let delimiterFound = false;
-        while (!delimiterFound) {
-            const delimiter = allowedDelimiters.shift();
-            delimiterFound = notedRange.includes(delimiter);
-            if (delimiterFound) {
-                const data = notedRange.split(delimiter).map(d => d.trim());
-                assert_1.default(data.length === 2, errorMessage);
-                range = Range.fromArray(data.map(d => Number(d)));
+    _calculateThrowType(rollSum) {
+        for (let throwType of Object.keys(this.settings.rollScores)) {
+            if (this._range(throwType).includes(rollSum)) {
+                return throwType;
             }
         }
-        return range;
+    }
+    /**
+     * Rolls the dice.
+     *
+     * @public
+     * @function roll
+     * @override
+     */
+    roll() {
+        const diceThrow = super.roll();
+        const ctr = new chance_throw_result_1.default(diceThrow);
+        const rollSum = diceThrow.getRollSum();
+        ctr.throwType = this._calculateThrowType(rollSum);
+        return ctr;
     }
 }
-exports.default = Range;
+exports.ChanceThrow = ChanceThrow;
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const dice_1 = __webpack_require__(2);
+;
+class CoinFlip extends dice_1.Dice {
+    constructor() {
+        super({ faces: 2 });
+    }
+}
+exports.CoinFlip = CoinFlip;
 
 
 /***/ })
