@@ -1,3 +1,5 @@
+import IRandomAlgorithm from "./random-algorithm.i";
+
 /**
  * Default constant value for setting up the BBS PRNG.
  * P must be a prime number.
@@ -43,9 +45,8 @@ export type BlumBlumShubAlgorithmSettings = {
  * @public
  * @class BlumBlumShubAlgorithm
  */
-export class BlumBlumShubAlgorithm {
-  settings: BlumBlumShubAlgorithmSettings;
-  seedNumber: number;
+export class BlumBlumShubAlgorithm implements IRandomAlgorithm {
+  readonly seedNumber: number;
   M: number;
   P: number;
   Q: number;
@@ -60,7 +61,7 @@ export class BlumBlumShubAlgorithm {
    *                       in DefaultSeeds).
    * @constructor
    */
-  constructor(settings?: BlumBlumShubAlgorithmSettings) {
+  constructor(public settings?: BlumBlumShubAlgorithmSettings) {
     const defaults = {
       p: P,
       q: Q,
@@ -97,7 +98,11 @@ export class BlumBlumShubAlgorithm {
    * @return {Boolean}
    */
   static recommendsToReinstantiate() {
-    return false;
+    return true;
+  }
+
+  recommendsToReinstantiate() {
+    return BlumBlumShubAlgorithm.recommendsToReinstantiate();
   }
 
   /**

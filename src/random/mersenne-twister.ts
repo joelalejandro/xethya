@@ -1,3 +1,4 @@
+import IRandomAlgorithm from "./random-algorithm.i";
 import assert from '../utils/assert/assert';
 
 /**
@@ -34,8 +35,7 @@ export type MersenneTwisterAlgorithmSettings = {
   seedNumber?: number,
 };
 
-export class MersenneTwisterAlgorithm {
-  settings: MersenneTwisterAlgorithmSettings;
+export class MersenneTwisterAlgorithm implements IRandomAlgorithm {
   seedNumber: number;
   MT: number[];
   MTI: number;
@@ -46,7 +46,7 @@ export class MersenneTwisterAlgorithm {
    * @param  {Object} settings - Configuration for the generator:
    *         - seedNumber: The number for the seed.
    */
-  constructor(settings = {}) {
+  constructor(public settings?: MersenneTwisterAlgorithmSettings) {
     let seedNumber;
 
     const defaults = {
@@ -84,6 +84,10 @@ export class MersenneTwisterAlgorithm {
    */
   static recommendsToReinstantiate() {
     return false;
+  }
+
+  recommendsToReinstantiate() {
+    return MersenneTwisterAlgorithm.recommendsToReinstantiate();
   }
 
   /**
