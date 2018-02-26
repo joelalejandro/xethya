@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,7 +83,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const assertion_error_1 = __importDefault(__webpack_require__(12));
+const assertion_error_1 = __importDefault(__webpack_require__(20));
 function assert(condition, message) {
     if (!condition) {
         throw new assertion_error_1.default(message);
@@ -94,6 +94,42 @@ exports.default = assert;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const eventemitter3_1 = __webpack_require__(19);
+class Eventable extends eventemitter3_1.EventEmitter {
+    constructor() {
+        super();
+    }
+}
+exports.default = Eventable;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const abstract_collection_1 = __importDefault(__webpack_require__(7));
+class Collection extends abstract_collection_1.default {
+    constructor(indexName) {
+        super(indexName);
+        this.indexName = indexName;
+    }
+}
+exports.default = Collection;
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -216,7 +252,7 @@ exports.BlumBlumShubAlgorithm = BlumBlumShubAlgorithm;
 
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -276,9 +312,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const randomizer_1 = __importDefault(__webpack_require__(6));
-const blum_blum_shub_1 = __webpack_require__(1);
-const object_1 = __importDefault(__webpack_require__(4));
+const randomizer_1 = __importDefault(__webpack_require__(8));
+const blum_blum_shub_1 = __webpack_require__(3);
+const object_1 = __importDefault(__webpack_require__(5));
 const assert_1 = __importDefault(__webpack_require__(0));
 class Dice extends object_1.default {
     constructor({ faces = 6, randomStrategy = blum_blum_shub_1.BlumBlumShubAlgorithm, randomStrategySettings = {} } = {}) {
@@ -362,23 +398,7 @@ exports.Dice = Dice;
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const eventemitter3_1 = __webpack_require__(11);
-class Eventable extends eventemitter3_1.EventEmitter {
-    constructor() {
-        super();
-    }
-}
-exports.default = Eventable;
-
-
-/***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -387,7 +407,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventable_1 = __importDefault(__webpack_require__(3));
+const eventable_1 = __importDefault(__webpack_require__(1));
 class XethyaObject extends eventable_1.default {
     constructor() {
         super();
@@ -397,7 +417,7 @@ exports.default = XethyaObject;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -482,7 +502,65 @@ exports.default = Range;
 
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const eventable_1 = __importDefault(__webpack_require__(1));
+const assert_1 = __importDefault(__webpack_require__(0));
+class AbstractCollection extends eventable_1.default {
+    constructor(indexName) {
+        super();
+        this._list = {};
+        this.indexName = indexName;
+    }
+    get count() {
+        return Object.keys(this._list).length;
+    }
+    get(id) {
+        return this._list[id];
+    }
+    getAll() {
+        return Object.keys(this._list).map((id) => this._list[id]);
+    }
+    where(condition) {
+        return this.getAll().filter(condition);
+    }
+    contains(id) {
+        return id in this._list;
+    }
+    add(...items) {
+        this.emit('before:add', this, ...items);
+        items.forEach((item) => {
+            const index = item[this.indexName];
+            assert_1.default(!this.contains(index), `An item already exists with key: ${index}`);
+            this._list[index] = item;
+        });
+        this.emit('add', this);
+    }
+    remove(id) {
+        if (this.contains(id)) {
+            this.emit('before:remove', this);
+            delete this._list[id];
+            this.emit('remove');
+        }
+    }
+    removeAll() {
+        this.emit('before:removeAll', this);
+        this._list = {};
+        this.emit('removeAll', this);
+    }
+}
+exports.default = AbstractCollection;
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -500,7 +578,7 @@ exports.default = Randomizer;
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -517,9 +595,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
-const dice_1 = __webpack_require__(2);
-const dice_throw_result_1 = __importDefault(__webpack_require__(8));
-const blum_blum_shub_1 = __webpack_require__(1);
+const dice_1 = __webpack_require__(4);
+const dice_throw_result_1 = __importDefault(__webpack_require__(10));
+const blum_blum_shub_1 = __webpack_require__(3);
 const assert_1 = __importDefault(__webpack_require__(0));
 ;
 class DiceThrow {
@@ -544,7 +622,7 @@ exports.DiceThrow = DiceThrow;
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -562,7 +640,7 @@ exports.default = DiceThrowResult;
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -571,7 +649,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const dice_throw_result_1 = __importDefault(__webpack_require__(8));
+const dice_throw_result_1 = __importDefault(__webpack_require__(10));
 const allowedThrowTypes = [
     "failure" /* FAILURE */,
     "success" /* SUCCESS */,
@@ -593,7 +671,314 @@ exports.default = ChanceThrowResult;
 
 
 /***/ }),
-/* 10 */
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(__webpack_require__(0));
+const eventable_1 = __importDefault(__webpack_require__(1));
+class Modifier extends eventable_1.default {
+    constructor(id, value = 0, source = undefined) {
+        super();
+        this._id = '';
+        this._value = 0;
+        this._active = true;
+        this.id = id;
+        this.source = source;
+        this._value = value;
+    }
+    get id() {
+        return this._id;
+    }
+    set id(newId) {
+        assert_1.default(newId !== '', 'Modifier#set[id]: cannot be an empty String');
+        this._id = newId;
+    }
+    get active() {
+        return this._active;
+    }
+    set active(newValue) {
+        if (this._active !== newValue) {
+            this._active = newValue;
+            this.emit(newValue ? 'activate' : 'deactivate', this);
+            this.emit('change:active', this);
+        }
+    }
+    get value() {
+        return this._value;
+    }
+    set value(newValue) {
+        if (this._value !== newValue) {
+            const previousValue = this._value;
+            this.emit('before:change:value', {
+                previousValue,
+                newValue,
+            });
+            this._value = newValue;
+            this.emit('change:value', this);
+        }
+    }
+    get source() {
+        return this._source;
+    }
+    set source(newSource) {
+        this._source = newSource;
+    }
+}
+exports.default = Modifier;
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const modifier_1 = __importDefault(__webpack_require__(12));
+const base_modifier_calculator_1 = __webpack_require__(14);
+class BaseModifier extends modifier_1.default {
+    constructor(calculationMethod = base_modifier_calculator_1.BaseModifierCalculator) {
+        super('base');
+        this._calculateValue = base_modifier_calculator_1.BaseModifierCalculator;
+        this._calculateValue = calculationMethod;
+    }
+    get value() {
+        return super.value;
+    }
+    set value(newValue) {
+        super.value = this._calculateValue(newValue);
+    }
+}
+exports.default = BaseModifier;
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function BaseModifierCalculator(value) {
+    return Math.floor((value - 10) / 2);
+}
+exports.BaseModifierCalculator = BaseModifierCalculator;
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const collection_1 = __importDefault(__webpack_require__(2));
+class ModifierCollection extends collection_1.default {
+    constructor() {
+        super('id');
+    }
+    add(...modifiers) {
+        modifiers.forEach(this._bindModifierEvents.bind(this));
+        super.add(...modifiers);
+    }
+    remove(id) {
+        this._unbindModifierEvents(id);
+        super.remove(id);
+    }
+    removeAll() {
+        this.getAll().forEach(modifier => this.remove(modifier.id));
+    }
+    setValue(id, value) {
+        if (this.contains(id)) {
+            const modifier = this.get(id);
+            modifier.value = value;
+        }
+    }
+    activate(id) {
+        if (this.contains(id)) {
+            const modifier = this.get(id);
+            modifier.active = true;
+        }
+    }
+    deactivate(id) {
+        if (this.contains(id)) {
+            const modifier = this.get(id);
+            modifier.active = false;
+        }
+    }
+    getSum() {
+        if (this.count === 0) {
+            return 0;
+        }
+        return this.where(modifier => modifier.active)
+            .map(modifier => modifier.value)
+            .reduce((leftValue, rightValue) => leftValue + rightValue);
+    }
+    _bindModifierEvents(modifier) {
+        modifier.on('change:value', (...args) => {
+            this.emit('change:modifier:value', ...args);
+            this.emit(`change:modifier:${modifier.id}:value`, ...args);
+        });
+        modifier.on('change:active', (...args) => {
+            this.emit('change:modifier:active', ...args);
+            this.emit(`change:modifier:${modifier.id}:active`, ...args);
+        });
+        modifier.on('activate', (...args) => {
+            this.emit('activate:modifier', ...args);
+            this.emit(`activate:modifier:${modifier.id}`, ...args);
+        });
+        modifier.on('deactivate', (...args) => {
+            this.emit('deactivate:modifier', ...args);
+            this.emit(`deactivate:modifier:${modifier.id}`, ...args);
+        });
+    }
+    _unbindModifierEvents(id) {
+        this.off(`change:modifier:${id}:value`);
+        this.off(`change:modifier:${id}:active`);
+        this.off(`activate:modifier:${id}`);
+        this.off(`deactivate:modifier:${id}`);
+    }
+}
+exports.default = ModifierCollection;
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(__webpack_require__(0));
+const eventable_1 = __importDefault(__webpack_require__(1));
+const base_modifier_1 = __importDefault(__webpack_require__(13));
+const modifier_collection_1 = __importDefault(__webpack_require__(15));
+class Attribute extends eventable_1.default {
+    constructor({ id, initialValue = 0, valueRange = undefined }) {
+        super();
+        this._rawValue = 0;
+        this._id = '';
+        this.modifiers = new modifier_collection_1.default();
+        this.id = id;
+        this._rawValue = initialValue;
+        if (valueRange) {
+            this._valueRange = valueRange;
+        }
+        this.modifiers.add(new base_modifier_1.default());
+        this._updateBaseModifierValue();
+    }
+    _updateBaseModifierValue() {
+        this.modifiers.setValue('base', this._rawValue);
+    }
+    get id() {
+        return this._id;
+    }
+    set id(newId) {
+        assert_1.default(newId !== '', 'Attribute#set[id]: cannot be an empty String');
+        this._id = newId;
+    }
+    get rawValue() {
+        return this._rawValue;
+    }
+    set rawValue(newValue) {
+        const range = this._valueRange;
+        if (range) {
+            assert_1.default(range.includes(newValue), `Attribute#set[value]: value is out of range (must be within ${range.toString()})`);
+        }
+        const previousValue = this._rawValue;
+        if (previousValue !== newValue) {
+            this.emit('before:change:value', { previousValue, newValue });
+            this._rawValue = newValue;
+            this._updateBaseModifierValue();
+            this.emit('change:value', this);
+        }
+    }
+    get value() {
+        return this.rawValue + this.modifiers.getSum();
+    }
+    get baseModifierValue() {
+        const modifier = this.modifiers.get('base');
+        return modifier.value;
+    }
+    toString() {
+        const modifierSum = this.modifiers.getSum();
+        const sign = modifierSum >= 0 ? '+' : '';
+        return `${this.rawValue.toString()} (${sign}${modifierSum.toString()})`;
+    }
+}
+exports.Attribute = Attribute;
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const collection_1 = __importDefault(__webpack_require__(2));
+class AttributeCollection extends collection_1.default {
+    constructor() {
+        super('id');
+    }
+    add(...attributes) {
+        attributes.forEach(this._bindAttributeEvents.bind(this));
+        super.add(...attributes);
+    }
+    remove(id) {
+        this._unbindAttributeEvents(id);
+        super.remove(id);
+    }
+    removeAll() {
+        this.getAll().forEach(attribute => this.remove(attribute.id));
+    }
+    setValue(id, value) {
+        if (this.contains(id)) {
+            const attribute = this.get(id);
+            attribute.rawValue = value;
+        }
+    }
+    getModifierSumForAll() {
+        if (this.count === 0) {
+            return 0;
+        }
+        return this.getAll()
+            .map(attribute => attribute.modifiers.getSum())
+            .reduce((leftSum, rightSum) => leftSum + rightSum);
+    }
+    _bindAttributeEvents(attribute) {
+        attribute.on('change:value', (...args) => {
+            this.emit('change:attribute:value', ...args);
+            this.emit(`change:attribute:${attribute.id}:value`, ...args);
+        });
+    }
+    _unbindAttributeEvents(id) {
+        this.off(`change:attribute:${id}:value`);
+    }
+}
+exports.default = AttributeCollection;
+
+
+/***/ }),
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -609,9 +994,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventable_1 = __importDefault(__webpack_require__(3));
+const eventable_1 = __importDefault(__webpack_require__(1));
 exports.Eventable = eventable_1.default;
-const object_1 = __importDefault(__webpack_require__(4));
+const object_1 = __importDefault(__webpack_require__(5));
 exports.XethyaObject = object_1.default;
 // ----------------------------------------------------------------------------
 /**
@@ -619,37 +1004,66 @@ exports.XethyaObject = object_1.default;
  */
 const assert_1 = __importDefault(__webpack_require__(0));
 exports.assert = assert_1.default;
-const range_1 = __importDefault(__webpack_require__(5));
+const range_1 = __importDefault(__webpack_require__(6));
 exports.Range = range_1.default;
+const abstract_collection_1 = __importDefault(__webpack_require__(7));
+exports.AbstractCollection = abstract_collection_1.default;
+const collection_1 = __importDefault(__webpack_require__(2));
+exports.Collection = collection_1.default;
 // ----------------------------------------------------------------------------
 /**
  * @package Random
  */
-const BlumBlumShub = __importStar(__webpack_require__(1));
+const BlumBlumShub = __importStar(__webpack_require__(3));
 exports.BlumBlumShub = BlumBlumShub;
-const MersenneTwister = __importStar(__webpack_require__(13));
+const MersenneTwister = __importStar(__webpack_require__(21));
 exports.MersenneTwister = MersenneTwister;
-const randomizer_1 = __importDefault(__webpack_require__(6));
+const randomizer_1 = __importDefault(__webpack_require__(8));
 exports.Randomizer = randomizer_1.default;
 // ----------------------------------------------------------------------------
 /**
  * @package Dice
  */
-const dice_1 = __webpack_require__(2);
+const dice_1 = __webpack_require__(4);
 exports.Dice = dice_1.Dice;
-const dice_throw_1 = __webpack_require__(7);
+const dice_throw_1 = __webpack_require__(9);
 exports.DiceThrow = dice_throw_1.DiceThrow;
-const chance_throw_1 = __webpack_require__(14);
+const chance_throw_1 = __webpack_require__(22);
 exports.ChanceThrow = chance_throw_1.ChanceThrow;
-const chance_throw_result_1 = __importDefault(__webpack_require__(9));
+const chance_throw_result_1 = __importDefault(__webpack_require__(11));
 exports.ChanceThrowResult = chance_throw_result_1.default;
-const coin_flip_1 = __webpack_require__(15);
+const coin_flip_1 = __webpack_require__(23);
 exports.CoinFlip = coin_flip_1.CoinFlip;
 // ----------------------------------------------------------------------------
+/**
+ * @package Entity
+ */
+/**
+ * @namespace Modifiers
+ */
+const modifier_1 = __importDefault(__webpack_require__(12));
+exports.Modifier = modifier_1.default;
+const base_modifier_1 = __importDefault(__webpack_require__(13));
+exports.BaseModifier = base_modifier_1.default;
+const base_modifier_calculator_1 = __webpack_require__(14);
+exports.BaseModifierCalculator = base_modifier_calculator_1.BaseModifierCalculator;
+const modifier_collection_1 = __importDefault(__webpack_require__(15));
+exports.ModifierCollection = modifier_collection_1.default;
+/**
+ * @namespace Attributes
+ */
+const attribute_1 = __webpack_require__(16);
+exports.Attribute = attribute_1.Attribute;
+const attribute_collection_1 = __importDefault(__webpack_require__(17));
+exports.AttributeCollection = attribute_collection_1.default;
+const stat_1 = __importDefault(__webpack_require__(24));
+exports.Stat = stat_1.default;
+const stat_collection_1 = __importDefault(__webpack_require__(25));
+exports.StatCollection = stat_collection_1.default;
 
 
 /***/ }),
-/* 11 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -992,7 +1406,7 @@ if (true) {
 
 
 /***/ }),
-/* 12 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1008,7 +1422,7 @@ exports.default = AssertionError;
 
 
 /***/ }),
-/* 13 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1262,7 +1676,7 @@ exports.MersenneTwisterAlgorithm = MersenneTwisterAlgorithm;
 
 
 /***/ }),
-/* 14 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1342,10 +1756,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const range_1 = __importDefault(__webpack_require__(5));
-const blum_blum_shub_1 = __webpack_require__(1);
-const dice_throw_1 = __webpack_require__(7);
-const chance_throw_result_1 = __importDefault(__webpack_require__(9));
+const range_1 = __importDefault(__webpack_require__(6));
+const blum_blum_shub_1 = __webpack_require__(3);
+const dice_throw_1 = __webpack_require__(9);
+const chance_throw_result_1 = __importDefault(__webpack_require__(11));
 class ChanceThrow extends dice_throw_1.DiceThrow {
     constructor(settings = { randomStrategy: undefined }) {
         super({
@@ -1410,13 +1824,13 @@ exports.ChanceThrow = ChanceThrow;
 
 
 /***/ }),
-/* 15 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const dice_1 = __webpack_require__(2);
+const dice_1 = __webpack_require__(4);
 ;
 class CoinFlip extends dice_1.Dice {
     constructor() {
@@ -1424,6 +1838,80 @@ class CoinFlip extends dice_1.Dice {
     }
 }
 exports.CoinFlip = CoinFlip;
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const attribute_1 = __webpack_require__(16);
+const attribute_collection_1 = __importDefault(__webpack_require__(17));
+class Stat extends attribute_1.Attribute {
+    constructor(id, statCalculator) {
+        super({ id });
+        this._lastCalculatedValue = 0;
+        this.attributes = new attribute_collection_1.default();
+        this.modifiers.remove('base');
+        this._calculateStat = statCalculator;
+    }
+    get value() {
+        const value = this._calculateStat(this);
+        if (this._lastCalculatedValue !== value) {
+            this.emit('change:value', {
+                previousValue: this._lastCalculatedValue,
+                newValue: value,
+            });
+            this._lastCalculatedValue = value;
+        }
+        return value;
+    }
+}
+exports.default = Stat;
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+const collection_1 = __importDefault(__webpack_require__(2));
+class StatCollection extends collection_1.default {
+    constructor() {
+        super('id');
+    }
+    add(...stats) {
+        stats.forEach(stat => this._bindStatEvents.bind(this));
+        super.add(...stats);
+    }
+    remove(id) {
+        this._unbindStatEvents(id);
+        super.remove(id);
+    }
+    removeAll() {
+        this.getAll().forEach(stat => this.remove(stat.id));
+    }
+    _bindStatEvents(stat) {
+        stat.on('change:value', (...args) => {
+            this.emit('change:stat:value', ...args);
+            this.emit(`change:stat:${stat.id}:value`, ...args);
+        });
+    }
+    _unbindStatEvents(id) {
+        this.off(`change:stat:${id}:value`);
+    }
+}
+exports.default = StatCollection;
 
 
 /***/ })
