@@ -6,8 +6,8 @@ module.exports = {
   entry: './src/xethya',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js', 
-    libraryTarget: 'umd',
+    filename: 'xethya.js', 
+    libraryTarget: 'var',
     library: 'Xethya',
     umdNamedDefine: true,
   },
@@ -15,13 +15,9 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   devtool: 'source-map',
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      minimize: true,
-      sourceMap: true,
-      include: /\.min\.js$/,
-    })
-  ],  
+  optimization: {
+    minimize: true,
+  },
   module: {
     rules: [{
       // Include ts, tsx, and js files.
