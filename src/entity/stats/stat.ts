@@ -16,6 +16,15 @@ export default class Stat extends Attribute implements IHasAttributes {
 
     this.modifiers.remove('base');
     this._calculateStat = statCalculator;
+
+    this.attributes.on('change:attribute:value', this._valueChanged.bind(this));
+  }
+
+  private _valueChanged(): void {
+    this.emit('change:value', {
+      previousValue: this._lastCalculatedValue,
+      newValue: this.value,
+    });
   }
 
   get value(): number {

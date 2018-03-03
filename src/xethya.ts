@@ -79,6 +79,8 @@ import { IDiceThrowSettings, DiceThrowTypes, DiceThrow } from './dice/throws/dic
 import DiceThrowResult from './dice/throws/dice-throw-result';
 import { IChanceThrowSettings, ChanceThrow } from './dice/throws/chance-throw';
 import ChanceThrowResult from './dice/throws/chance-throw-result';
+import SkillThrow from './dice/throws/skill-throw';
+import { SkillThrowResult, SkillThrowResultSettings }from './dice/throws/skill-throw-result';
 import IRollScoreSettings from './dice/throws/roll-score-settings.i';
 
 import { CoinFlip, CoinFlipSides } from './dice/presets/coin-flip';
@@ -93,6 +95,9 @@ export {
   IChanceThrowSettings,
   ChanceThrow,
   ChanceThrowResult,
+  SkillThrow,
+  SkillThrowResult,
+  SkillThrowResultSettings,
   IRollScoreSettings,
 
   CoinFlipSides,
@@ -104,6 +109,27 @@ export {
 /**
  * @package Entity
  */
+
+import { AbstractEntity, IEntitySettings, MoralAlignments } from './entity/abstract-entity';
+import Entity from './entity/entity';
+import IEntity from './entity/entity.i';
+import { AbleEntity, IAbleEntitySettings } from './entity/able-entity';
+import { LivingEntity, ILivingEntitySettings } from './entity/living-entity';
+import { Race, RaceSettings } from './entity/race/race';
+
+export {
+  IEntitySettings,
+  IEntity,
+  AbstractEntity,
+  Entity,
+  IAbleEntitySettings,
+  AbleEntity,
+  ILivingEntitySettings,
+  LivingEntity,
+  MoralAlignments,
+  RaceSettings,
+  Race,
+}
 
 /**
  * @namespace Modifiers
@@ -153,4 +179,19 @@ export {
   Stat,
   StatCollection,
   IHasStats,
+};
+
+/**
+ * @namespace Skills
+ */
+
+import { Skill, SkillSettings } from './entity/skills/skill';
+import SkillCollection from './entity/skills/skill-collection';
+import IHasSkills from './entity/skills/has-skills.i';
+
+export {
+  Skill,
+  SkillSettings,
+  SkillCollection,
+  IHasSkills,
 };

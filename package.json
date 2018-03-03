@@ -5,7 +5,8 @@
   "main": "dist/xethya.js",
   "scripts": {
     "clean": "shx rm -rf dist/",
-    "build": "yarn clean && tsc --outDir lib && webpack",
+    "build": "yarn clean && tsc --outDir lib && webpack --mode=development",
+    "dist": "yarn clean && tsc --outDir lib && webpack --mode=production",
     "type-check": "tsc",
     "test": "nyc mocha --reporter spec --require ts-node/register src/**/*.test.ts",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
@@ -31,7 +32,7 @@
     "shx": "^0.2.2",
     "ts-node": "^5.0.0",
     "typescript": "^2.7.2",
-    "webpack": "3.11.0",
+    "webpack": "^4.0.0",
     "webpack-cli": "^2.0.9"
   },
   "dependencies": {

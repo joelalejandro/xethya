@@ -137,4 +137,9 @@ describe('Entity.AttributeCollection', () => {
       expect(collection.getModifierSumForAll()).to.equal(0);
     });
   });
+  it('should create a collection based on Attribute[]', () => {
+    const collection = AttributeCollection.fromArray([new FooAttribute(), new BarAttribute()]);
+    expect(collection.contains('foo')).to.be.true;
+    expect(collection.contains('bar')).to.be.true;
+  });    
 });

@@ -18,4 +18,15 @@ describe('Utils.Collection', () => {
     const collection = new Collection<MyItem>('key');
     expect(collection.indexName).to.equal('key');
   });
+
+  it('should create a collection based on T[]', () => {
+    let collection: Collection<MyItem>;
+    collection = Collection.fromArrayOf<MyItem>(
+      [new MyItem('a', 'Alpha'),
+       new MyItem('b', 'Beta')],
+      'key'
+    );
+    expect(collection.indexName).to.equal('key');
+    expect(collection.count).to.equal(2);
+  });
 });

@@ -79,4 +79,12 @@ export default class ModifierCollection extends Collection<Modifier> {
     this.off(`activate:modifier:${id}`);
     this.off(`deactivate:modifier:${id}`);
   }
+
+  static fromArray(modifiers: Modifier[]) : ModifierCollection {
+    const collection: ModifierCollection = new ModifierCollection();
+
+    collection.add(...modifiers);
+
+    return collection;
+  }  
 }

@@ -47,4 +47,12 @@ export default class AttributeCollection extends Collection<Attribute> {
   private _unbindAttributeEvents(id: string): void {
     this.off(`change:attribute:${id}:value`);    
   }
+
+  static fromArray(attributes: Attribute[]) : AttributeCollection {
+    const collection: AttributeCollection = new AttributeCollection();
+
+    collection.add(...attributes);
+
+    return collection;
+  }
 }

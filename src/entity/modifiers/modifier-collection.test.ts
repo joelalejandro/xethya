@@ -238,4 +238,9 @@ describe('Entity.ModifierCollection', () => {
       expect(collection.getSum()).to.equal(0);
     });
   });
+  it('should create a collection based on Modifier[]', () => {
+    const collection = ModifierCollection.fromArray([new FooModifier(), new BarModifier()]);
+    expect(collection.contains('foo')).to.be.true;
+    expect(collection.contains('bar')).to.be.true;
+  });  
 });
