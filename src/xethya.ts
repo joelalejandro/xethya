@@ -29,6 +29,11 @@ import ICollection from './utils/collection/collection.i';
 import AbstractCollection from './utils/collection/abstract-collection';
 import Collection from './utils/collection/collection';
 
+import IGrouping from './utils/group-by/grouping.i';
+import ITransform from './utils/group-by/transform.i';
+import IGroupCriteria from './utils/group-by/group-criteria.i';
+import { group, groupAndMap } from './utils/group-by/group-by';
+
 export {
   assert,
 
@@ -42,6 +47,12 @@ export {
   ICollection,
   AbstractCollection,
   Collection,
+
+  IGrouping,
+  IGroupCriteria,
+  ITransform,
+  group,
+  groupAndMap,
 } 
 
 // ----------------------------------------------------------------------------
@@ -194,4 +205,116 @@ export {
   SkillSettings,
   SkillCollection,
   IHasSkills,
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * @package Relationships
+ */
+
+import IFaction from './relationships/faction.i';
+import IFactionSettings from './relationships/faction-settings.i';
+import AbstractFaction from './relationships/abstract-faction';
+import Faction from './relationships/faction';
+import IFactionRelationship from './relationships/faction-relationship.i';
+import { FactionRelationshipStatus } from './relationships/faction-relationship-status';
+
+export {
+  IFaction,
+  IFactionSettings,
+  AbstractFaction,
+  Faction,
+  FactionRelationshipStatus,
+  IFactionRelationship,
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * @package Interaction
+ */
+
+/**
+ * @namespace Turn
+ */
+
+import IAction from './interaction/action.i';
+import ITurnSettings from './interaction/turn-settings.i';
+import ITurn from './interaction/turn.i';
+import { TurnEvent, ITurnEvent } from './interaction/turn-event.i';
+import IConstructableTurn from './interaction/constructable-turn.i';
+import TurnResolver from './interaction/turn-resolver';
+import AbstractTurn from './interaction/abstract-turn';
+import Turn from './interaction/turn';
+
+export {
+  IAction,
+  ITurnSettings,
+  ITurn,
+  TurnEvent,
+  ITurnEvent,
+  IConstructableTurn,
+  TurnResolver,
+  AbstractTurn,
+  Turn,
+};
+
+/**
+ * @namespace Round
+ */
+
+import IRound from './interaction/round.i';
+import IRoundSettings from './interaction/round-settings.i';
+import { RoundEvent, IRoundEvent } from './interaction/round-event.i';
+import AbstractRound from './interaction/abstract-round';
+import Round from './interaction/round';
+
+export {
+  IRound,
+  IRoundSettings,
+  RoundEvent,
+  IRoundEvent,
+  AbstractRound,
+  Round,
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * @package Combat
+ */
+
+import ICombatTurn from './combat/combat-turn.i';
+import ICombatTurnSettings from './combat/combat-turn-settings.i';
+import CombatTurn from './combat/combat-turn';
+import IConstructableCombatTurn from './combat/constructable-combat-turn.i';
+import ICombatRound from './combat/combat-round.i';
+import ICombatRoundSettings from './combat/combat-round-settings.i';
+import ICombatValidator from './combat/combat-validator.i';
+import CombatRound from './combat/combat-round';
+import ICombatSimulation from './combat/combat-simulation.i';
+import ICombatSimulationSettings from './combat/combat-simulation-settings.i';
+import ICombatSimulationResult from './combat/combat-simulation-result.i';
+import ICombatFinalizationSettings from './combat/combat-finalization-settings.i';
+import AbstractCombatSimulation from './combat/abstract-combat-simulation';
+import CombatSimulation from './combat/combat-simulation';
+
+export {
+  ICombatTurn,
+  ICombatTurnSettings,
+  CombatTurn,
+  IConstructableCombatTurn,
+
+  ICombatRound,
+  ICombatRoundSettings,
+  ICombatValidator,
+  CombatRound,
+
+  ICombatSimulation,
+  ICombatSimulationSettings,
+  ICombatSimulationResult,
+  ICombatFinalizationSettings,
+  AbstractCombatSimulation,
+  CombatSimulation,
 };
