@@ -1,10 +1,3 @@
-import { Turn } from './turn';
-import XethyaObject from '../base/object';
+import AbstractRound from './abstract-round';
 
-export type RoundSettings = {
-  
-};
-
-export class Round extends XethyaObject {
-  
-}
+export default class Round extends AbstractRound {}
