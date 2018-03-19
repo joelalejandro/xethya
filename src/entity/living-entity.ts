@@ -6,6 +6,8 @@ import Stat from './stats/stat';
 import StatCollection from './stats/stat-collection';
 import IHasStats from './stats/has-stats.i';
 import { Skill } from './skills/skill';
+import IFaction from '../relationships/faction.i';
+import IFactionMemberEntity from './faction-member-entity.i';
 
 export interface ILivingEntitySettings extends IAbleEntitySettings {
   race: Race;
@@ -13,14 +15,16 @@ export interface ILivingEntitySettings extends IAbleEntitySettings {
   height: number;
   weight: number;
   stats: Stat[];
+  faction: IFaction;
 }
 
-export class LivingEntity extends AbleEntity implements IHasStats {
+export class LivingEntity extends AbleEntity implements IHasStats, IFactionMemberEntity {
   protected _race: Race;
   protected _age: number;
   protected _height: number;
   protected _weight: number;
   protected _stats: StatCollection;
+  protected _faction: IFaction;
 
   constructor(settings: ILivingEntitySettings) {
     super(settings);
@@ -29,6 +33,7 @@ export class LivingEntity extends AbleEntity implements IHasStats {
     this._age = settings.age;
     this._weight = settings.weight;
     this._height = settings.height;
+    this._faction = settings.faction;
 
     this._stats = StatCollection.fromArray(settings.stats);
 
@@ -53,6 +58,10 @@ export class LivingEntity extends AbleEntity implements IHasStats {
 
   get weight() {
     return this._weight;
+  }
+
+  get faction() {
+    return this._faction;
   }
 
   protected _applyRacialTraits(): void {
