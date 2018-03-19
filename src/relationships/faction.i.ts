@@ -1,6 +1,6 @@
 import IFactionRelationship from './faction-relationship.i';
 import IGrouping from '../utils/group-by/grouping.i';
-import FactionRelationshipStatus from './faction-relationship-status';
+import { FactionRelationshipStatus } from './faction-relationship-status';
 
 export default interface IFaction {
   id: string;

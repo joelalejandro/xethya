@@ -9,6 +9,7 @@ import { Race } from './race/race';
 import { LivingEntity } from './living-entity';
 import Range from '../utils/range/range';
 import { MoralAlignments } from './abstract-entity';
+import Faction from '../relationships/faction';
 
 const Strength = new Attribute({ id: 'strength', initialValue: 10 });
 const Anger = new Modifier('anger', 0);
@@ -39,7 +40,12 @@ const Generi = new Race({
   heritageAttributes: [GeneriStrength],
   heritageSkills: [GeneriPunch],
   heritageStats: [GeneriHeartRate],
-})
+});
+
+const Goodie = new Faction({
+  id: 'goodie',
+  name: 'The Goodies',
+});
 
 let entity: LivingEntity;
 describe('Entity.LivingEntity', () => {
@@ -59,6 +65,7 @@ describe('Entity.LivingEntity', () => {
       height: 165,
       weight: 90,
       race: Generi,
+      faction: Goodie,
     })
   });
   it('should instantiate with the expected input', () => {
