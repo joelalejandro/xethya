@@ -149,6 +149,14 @@ describe('Utils.AbstractCollection', () => {
       expect(collection.getAll()).to.deep.equal([]);
     });
   });
+  describe('#getAllKeys', () => {
+    beforeEach(() => {
+      collection.add(...itemList);
+    });
+    it('should return all keys in the collection', () => {
+      expect(collection.getAllKeys()).to.deep.equal(['1', '2']);
+    });
+  });
   describe('#where', () => {
     beforeEach(() => {
       collection.add(...itemList);

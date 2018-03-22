@@ -6,6 +6,7 @@ export default interface ICollection<T> {
   
   get(id: string): T | undefined;
   getAll(): T[];
+  getAllKeys(): string[];
   where(condition: IQuery<T>): T[];
   contains(id: string): boolean;
   add(...items: T[]): void;
