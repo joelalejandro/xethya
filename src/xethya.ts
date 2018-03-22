@@ -34,6 +34,9 @@ import ITransform from './utils/group-by/transform.i';
 import IGroupCriteria from './utils/group-by/group-criteria.i';
 import { group, groupAndMap } from './utils/group-by/group-by';
 
+import IShuffledElement from './utils/shuffle/shuffled-element.i';
+import { shuffleArray, shuffleCollection } from './utils/shuffle/shuffle';
+
 export {
   assert,
 
@@ -53,6 +56,10 @@ export {
   ITransform,
   group,
   groupAndMap,
+
+  IShuffledElement,
+  shuffleArray,
+  shuffleCollection,
 } 
 
 // ----------------------------------------------------------------------------
