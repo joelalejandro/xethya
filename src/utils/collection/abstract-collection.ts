@@ -15,7 +15,7 @@ abstract class AbstractCollection<T extends {[index: string]: any}> extends Even
   }
 
   get count(): number {
-    return Object.keys(this._list).length;
+    return this.getAllKeys().length;
   }
 
   get(id: string): T | undefined {
@@ -23,7 +23,11 @@ abstract class AbstractCollection<T extends {[index: string]: any}> extends Even
   }
 
   getAll(): T[] {
-    return Object.keys(this._list).map((id: string) => this._list[id]);
+    return this.getAllKeys().map((id: string) => this._list[id]);
+  }
+
+  getAllKeys(): string[] {
+    return Object.keys(this._list);
   }
 
   where(condition: IQuery<T>): T[] {
