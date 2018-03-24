@@ -59,8 +59,10 @@ import IConstructableRandomAlgorithm from '../random/constructable-random-algori
 import IConstructable from '../utils/constructable.t';
 import IRandomSettings from '../random/random-settings.i';
 
-export interface IDiceSettings extends IRandomSettings {
-  faces: number,
+export interface IDiceSettings {
+  faces: number;
+  randomStrategy?: IRandomAlgorithm;
+  randomStrategySettings?: object;
 }
 
 export class Dice extends XethyaObject {
