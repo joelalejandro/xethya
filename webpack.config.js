@@ -7,7 +7,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'xethya.js', 
-    libraryTarget: 'var',
+    libraryTarget: 'umd',
+    globalObject: 'this',
     library: 'Xethya',
     umdNamedDefine: true,
   },

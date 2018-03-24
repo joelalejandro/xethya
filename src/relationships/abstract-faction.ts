@@ -5,7 +5,7 @@ import { FactionRelationshipStatus } from './faction-relationship-status';
 import { groupAndMap } from '../utils/group-by/group-by';
 import IGrouping from '../utils/group-by/grouping.i';
 
-export default class AbstractFaction implements IFaction {
+export default abstract class AbstractFaction implements IFaction {
   protected _id: string;
   protected _name: string;
   protected _allRelationships: IFactionRelationship[];
