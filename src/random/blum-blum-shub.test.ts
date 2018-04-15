@@ -14,6 +14,11 @@ describe('Random.BlumBlumShubAlgorithm', () => {
     expect(BlumBlumShubAlgorithm.recommendsToReinstantiate()).to.be.a('boolean');
   });
 
+  it('should recommend reinstatiation', () => {
+    expect(BlumBlumShubAlgorithm.recommendsToReinstantiate()).to.be.true;
+    expect(new BlumBlumShubAlgorithm().recommendsToReinstantiate()).to.be.true;
+  });
+
   describe('#constructor', () => {
 
     it('should instantiate correctly with default parameters', () => {

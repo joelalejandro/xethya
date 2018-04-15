@@ -22,7 +22,6 @@ export class LivingEntity extends AbleEntity implements IHasStats, IFactionMembe
   protected _race: Race;
   protected _age: number;
   protected _height: number;
-  protected _weight: number;
   protected _stats: StatCollection;
   protected _faction: IFaction;
 
@@ -31,7 +30,6 @@ export class LivingEntity extends AbleEntity implements IHasStats, IFactionMembe
 
     this._race = settings.race;
     this._age = settings.age;
-    this._weight = settings.weight;
     this._height = settings.height;
     this._faction = settings.faction;
 
@@ -54,10 +52,6 @@ export class LivingEntity extends AbleEntity implements IHasStats, IFactionMembe
 
   get height() {
     return this._height;
-  }
-
-  get weight() {
-    return this._weight;
   }
 
   get faction() {
@@ -99,5 +93,5 @@ export class LivingEntity extends AbleEntity implements IHasStats, IFactionMembe
       );
       (this.skills.get(skill.id) as Skill).modifiers.add(raceTrait);
     });
-  }  
+  }
 }
