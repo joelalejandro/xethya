@@ -11,8 +11,6 @@ module.exports = function () {
     env: {
       type: 'node',
       runner: 'node'  // or full path to any node executable
-    },
-
-    debug: true
+    }
   };
 };
