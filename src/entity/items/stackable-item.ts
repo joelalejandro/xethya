@@ -4,7 +4,7 @@ import IStackableItemSettings from "./stackable-item-settings.i";
 import IItemSettings from "./item-settings.i";
 
 export default class StackableItem extends Item implements IStackableItem {
-  protected readonly _maxAmountInStack: number = 1;
+  protected _maxAmountInStack: number = 1;
 
   constructor(settings: IStackableItemSettings) {
     super(settings as IItemSettings);
