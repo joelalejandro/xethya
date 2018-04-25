@@ -5,8 +5,11 @@ import ItemStack from '../items/item-stack';
 import IStackableItem from '../items/stackable-item.i';
 import IInventorySettings from './inventory-settings.i';
 import IEntity from '../entity.i';
+import IStorable from './storable.i';
+import bySum from '../../utils/reducers/by-sum';
+import byKey from '../../utils/mappers/by-key';
 
-export default class Inventory extends Collection<(Item | ItemStack<IStackableItem>)> implements IInventory {
+export default class Inventory extends Collection<IStorable> implements IInventory {
   protected _maximumCapacity: number;
   protected _owner: IEntity;
 
@@ -28,23 +31,19 @@ export default class Inventory extends Collection<(Item | ItemStack<IStackableIt
     return this._owner;
   }
 
-  protected _countItemsAndStackedItems(collection: Collection<(Item | ItemStack<IStackableItem>)> = this): number {
-    const stacks = collection.where(item => item.id.startsWith('stack:')) as ItemStack<IStackableItem>[];
-    const stackedItems: number = stacks.map(item => item.amount).reduce((left, right) => left + right);
-    const items = super.count - stacks.length;
-
-    return items + stackedItems;
+  protected _calculateWeight(collection: Collection<IStorable> = this): number {
+    return collection.getAll().map(byKey('weight')).reduce(bySum, 0);
   }
 
   get count(): number {
-    return this._countItemsAndStackedItems();
+    return this._calculateWeight();
   }
 
-  add(...items: (Item | ItemStack<IStackableItem>)[]): void {
-    const itemsToAdd = Collection.fromArrayOf<(Item | ItemStack<IStackableItem>)>(items, 'id');
-    const amountofItemsToAdd = this._countItemsAndStackedItems(itemsToAdd);
+  add(...items: IStorable[]): void {
+    const itemsToAdd = Collection.fromArrayOf<IStorable>(items, 'id');
+    const amountOfItemsToAdd = this._calculateWeight(itemsToAdd);
 
-    if (amountofItemsToAdd + this.count > this.maximumCapacity) {
+    if (amountOfItemsToAdd + this.count > this.maximumCapacity) {
       throw new Error('Inventory#add: cannot add all items, would exceed capacity');
     }
 
