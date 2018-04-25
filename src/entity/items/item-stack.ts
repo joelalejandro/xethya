@@ -1,29 +1,32 @@
 import IItemStack from './item-stack.i';
 import XethyaObject from '../../base/object';
 import IStackableItem from './stackable-item.i';
-import IConstructableStackableItem from './constructable-stackable-item.i';
 import Price from '../../economy/price';
 import StackableItem from './stackable-item';
-import StackableItemFactory from './stackable-item-factory';
+import Factory from '../../utils/factory';
+import IConstructable from '../../utils/constructable.i';
 
-export default class ItemStack<T extends IConstructableStackableItem<T>> extends XethyaObject implements IItemStack<T> {
-  protected _amount: number;
+export default class ItemStack<T extends IStackableItem> extends XethyaObject implements IItemStack<T> {
+  protected _amount: number = 1;
   protected readonly _id: string;
   protected readonly _capacity: number;
-  protected readonly _item: StackableItemFactory<T>;
+  protected readonly _item: IConstructable<T>;
   protected readonly _baseValue: Price;
+  protected _weight: number = 0;
+  protected _itemEntity: T;
 
-  constructor(item: T, amount: number = 1) {
+  constructor(item: IConstructable<T>, amount: number = 1) {
     super();
 
-    this._amount = amount;
-    this._item = new StackableItemFactory<T>(item);
+    this._item = item;
 
-    const itemEntity = this._item.create({});
+    this._itemEntity = Factory.create(this._item);
 
-    this._id = `stack:${itemEntity.id}`;
-    this._baseValue = itemEntity.baseValue as Price;
-    this._capacity = itemEntity.maxAmountInStack;
+    this._id = `stack:${this._itemEntity.id}`;
+    this._baseValue = this._itemEntity.baseValue as Price;
+    this._capacity = this._itemEntity.maxAmountInStack;
+
+    this.amount = amount;
   }
 
   get id() {
@@ -48,6 +51,7 @@ export default class ItemStack<T extends IConstructableStackableItem<T>> extends
     }
 
     this._amount = newAmount;
+    this._weight = this._itemEntity.weight * newAmount;
   }
 
   get capacity() {
@@ -62,12 +66,16 @@ export default class ItemStack<T extends IConstructableStackableItem<T>> extends
     return this._baseValue.multipliedBy(this._amount);
   }
 
+  get weight(): number {
+    return this._weight;
+  }
+
   push() {
-    this._amount += 1;
+    this.amount += 1;
   }
 
   pop(): T {
-    this._amount -= 1;
-    return new this._item();
+    this.amount -= 1;
+    return this._itemEntity;
   }
 }

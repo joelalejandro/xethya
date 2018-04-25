@@ -1,11 +1,10 @@
-import IConstructableStackableItem from './constructable-stackable-item.i';
 import IStackableItem from './stackable-item.i';
 import IPrice from '../../economy/price.i';
-import StackableItemFactory from './stackable-item-factory';
+import IStorable from '../inventory/storable.i';
+import IConstructable from '../../utils/constructable.i';
 
-export default interface IItemStack<T extends IConstructableStackableItem<T>> {
-  readonly id: string;
-  readonly item: StackableItemFactory<T>;
+export default interface IItemStack<T extends IStackableItem> extends IStorable {
+  readonly item: IConstructable<T>;
   readonly capacity: number;
   readonly baseValue: IPrice;
 
