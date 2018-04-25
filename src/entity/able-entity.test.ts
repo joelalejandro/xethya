@@ -25,6 +25,7 @@ describe('Entity.AbleEntity', () => {
       attributes: [Strength],
       modifiers: [Anger],
       skills: [Punch],
+      weight: 10,
     });
   });
   it('should instantiate with the expected input', () => {
@@ -34,5 +35,6 @@ describe('Entity.AbleEntity', () => {
     expect(entity.attributes.contains('strength')).to.be.true;
     expect(entity.modifiers.contains('anger')).to.be.true;
     expect(entity.skills.contains('punch')).to.be.true;
+    expect(entity.weight).to.equal(10);
   });
 });

@@ -15,6 +15,11 @@ describe('Random.MersenneTwister', () => {
     expect(MersenneTwisterAlgorithm.recommendsToReinstantiate()).to.be.a('boolean');
   });
 
+  it('should not recommend reinstatiation', () => {
+    expect(MersenneTwisterAlgorithm.recommendsToReinstantiate()).to.be.false;
+    expect(new MersenneTwisterAlgorithm().recommendsToReinstantiate()).to.be.false;
+  });
+
   it('should initialize correctly with either method', () => {
     const mt = new MersenneTwisterAlgorithm();
 
@@ -49,7 +54,7 @@ describe('Random.MersenneTwister', () => {
     mt.initializeByArray(numbers);
     expect(mt.MT[0]).to.equal(0x80000000);
   });
-  
+
   it('should initialize correctly with a positive seed', () => {
     const mt = new MersenneTwisterAlgorithm({ seedNumber: Math.abs(Math.floor(Math.random() * 10000)) });
     expect(mt.MT).to.satisfy((arr: number[]) => arr.every(num => !isNaN(num)));
