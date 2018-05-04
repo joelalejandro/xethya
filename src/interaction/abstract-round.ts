@@ -69,7 +69,7 @@ export default abstract class AbstractRound<T extends ITurn> extends XethyaObjec
   }
 
   onTurnEnd({ turn }: ITurnEvent): void {
-    this.updateTurn(turn);
+    this.updateTurn(turn as T);
   }
 
   begin(): void {
@@ -82,13 +82,13 @@ export default abstract class AbstractRound<T extends ITurn> extends XethyaObjec
   }
 
   announceTurn(): void {
-    const nextTurn: ITurn = this._turns.find(turn => !turn.isResolved()) as ITurn;
+    const nextTurn: T = this._turns.find(turn => !turn.isResolved()) as T;
     this._currentTurn = nextTurn;
 
     nextTurn.begin();
   }
 
-  updateTurn(turn: ITurn): void {
+  updateTurn(turn: T): void {
     const previousTurnIndex = turn.turnNumber - 1;
 
     this._turns[previousTurnIndex].action = turn.action;

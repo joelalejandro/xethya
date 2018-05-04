@@ -13,10 +13,11 @@ import { IRoundEvent } from '../interaction/round-event.i';
 import { ITurnEvent } from '../interaction/turn-event.i';
 import ICombatFinalizationSettings from './combat-finalization-settings.i';
 import ICombatSimulationResult from './combat-simulation-result.i';
+import IConstructable from '../utils/constructable.i';
 
 export default abstract class AbstractCombatSimulation extends XethyaObject implements ICombatSimulation {
   protected readonly _entities: IFactionMemberEntity[];
-  protected readonly _turnResolver: ICombatTurn;
+  protected readonly _turnResolver: IConstructable<ICombatTurn>;
   protected readonly _challengeResolver: ICombatValidator;
   protected readonly _roundRequestValidator: ICombatValidator;
 
@@ -34,7 +35,7 @@ export default abstract class AbstractCombatSimulation extends XethyaObject impl
 
     this._entities = entities;
     this._rounds = [];
-    this._turnResolver = turnResolver as ICombatTurn;
+    this._turnResolver = turnResolver as IConstructable<CombatTurn>;
     this._challengeResolver = challengeResolver;
     this._roundRequestValidator = roundRequestValidator;
   }
@@ -120,7 +121,7 @@ export default abstract class AbstractCombatSimulation extends XethyaObject impl
   onRoundTurn({ turn }: ITurnEvent<ICombatTurn>): void {
     this.emit('turn:round', { turn });
   }
-  
+
   applyRoundResults(round: ICombatRound): void {
     this._rounds.push(round);
     this.beginRound();
