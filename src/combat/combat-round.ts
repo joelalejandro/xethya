@@ -9,9 +9,10 @@ import Round from '../interaction/round';
 import IFaction from '../relationships/faction.i';
 import IGrouping from '../utils/group-by/grouping.i';
 import { group } from '../utils/group-by/group-by';
+import IConstructable from '../utils/constructable.i';
 
-export default class CombatRound extends Round implements ICombatRound<ICombatTurn, IFactionMemberEntity> {
-  protected _turnType: ICombatTurn;
+export default class CombatRound extends Round<ICombatTurn> implements ICombatRound<ICombatTurn, IFactionMemberEntity> {
+  protected _turnType: IConstructable<ICombatTurn>;
   protected _turns: ICombatTurn[];
   protected _entities: IFactionMemberEntity[];
   protected _entitiesByFaction: IGrouping<IFactionMemberEntity>;

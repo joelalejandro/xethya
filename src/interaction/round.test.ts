@@ -7,7 +7,7 @@ import ITurn from './turn.i';
 import IConstructableTurn from './constructable-turn.i';
 import { ITurnEvent } from './turn-event.i';
 
-let round: Round;
+let round: Round<Turn>;
 
 const entity = new Entity({
   id: 'entity1',
@@ -43,7 +43,7 @@ describe('Interaction.AbstractRound', () => {
   });
   describe('#begin', () => {
     it('should trigger "before:begin" event', (done) => {
-      round.once('before:begin', (eventData: { round: Round }) => {
+      round.once('before:begin', (eventData: { round: Round<Turn> }) => {
         expect(round).to.deep.equal(eventData.round);
         done();
       });
@@ -51,7 +51,7 @@ describe('Interaction.AbstractRound', () => {
       round.begin();
     });
     it('should trigger "begin" event', (done) => {
-      round.once('begin', (eventData: { round: Round }) => {
+      round.once('begin', (eventData: { round: Round<Turn> }) => {
         expect(round).to.deep.equal(eventData.round);
         done();
       });
@@ -73,7 +73,7 @@ describe('Interaction.AbstractRound', () => {
   });
   it('should build a turn for a given entity', () => {
     const turnForEntity1 = round.buildTurnFor(entity, 1);
-    
+
     expect(turnForEntity1.owner).to.deep.equal(entity);
     expect(turnForEntity1.turnNumber).to.equal(1);
   });
@@ -106,7 +106,7 @@ describe('Interaction.AbstractRound', () => {
   });
   it('should trigger "complete" when a round is finished', (done) => {
     let currentTurn: ITurn;
-    
+
     round.once('complete', () => {
       expect(round.turns.every(turn => turn.isResolved())).to.be.true;
       done();

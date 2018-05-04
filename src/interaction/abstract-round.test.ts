@@ -8,7 +8,7 @@ import ITurn from './turn.i';
 import IConstructableTurn from './constructable-turn.i';
 import { ITurnEvent } from './turn-event.i';
 
-class MyRound extends AbstractRound {};
+class MyRound extends AbstractRound<ITurn> {};
 
 let round: MyRound;
 
@@ -76,7 +76,7 @@ describe('Interaction.AbstractRound', () => {
   });
   it('should build a turn for a given entity', () => {
     const turnForEntity1 = round.buildTurnFor(entity, 1);
-    
+
     expect(turnForEntity1.owner).to.deep.equal(entity);
     expect(turnForEntity1.turnNumber).to.equal(1);
   });
@@ -109,7 +109,7 @@ describe('Interaction.AbstractRound', () => {
   });
   it('should trigger "complete" when a round is finished', (done) => {
     let currentTurn: ITurn;
-    
+
     round.once('complete', () => {
       expect(round.turns.every(turn => turn.isResolved())).to.be.true;
       done();

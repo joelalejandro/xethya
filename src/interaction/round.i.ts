@@ -2,11 +2,12 @@ import ITurn from './turn.i';
 import IEntity from '../entity/entity.i';
 import { TurnEvent } from './turn-event.i';
 import EventEmitter from 'eventemitter3';
+import IConstructable from '../utils/constructable.i';
 
 export default interface IRound<T = ITurn, E = IEntity> extends EventEmitter {
   entities: E[];
   roundNumber: number;
-  turnType: T;
+  turnType: IConstructable<T>;
   turns: T[];
   currentTurn?: T;
 

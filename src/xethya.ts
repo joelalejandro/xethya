@@ -35,13 +35,13 @@ const Utils = {
 
   shuffleArray,
   shuffleCollection,
-} 
+}
 
 // ----------------------------------------------------------------------------
 
 /**
  * @package Random
- */ 
+ */
 
 import * as BlumBlumShub from './random/blum-blum-shub';
 import * as MersenneTwister from './random/mersenne-twister';
@@ -144,7 +144,6 @@ const Relationships = {
  * @package Interactions
  */
 
-import TurnResolver from './interaction/turn-resolver';
 import AbstractTurn from './interaction/abstract-turn';
 import Turn from './interaction/turn';
 import AbstractRound from './interaction/abstract-round';
@@ -156,7 +155,6 @@ import CombatSimulation from './combat/combat-simulation';
 import IStatCalculator from './entity/stats/stat-calculator.i';
 
 const Interactions = {
-  TurnResolver,
   AbstractTurn,
   Turn,
   AbstractRound,
@@ -177,6 +175,6 @@ export {
   Entities,
   Relationships,
   Interactions,
-  
+
   IStatCalculator,
 };

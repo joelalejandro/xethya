@@ -7,16 +7,17 @@ import ICombatSimulationResult from './combat-simulation-result.i';
 import ICombatFinalizationSettings from './combat-finalization-settings.i';
 import { RoundEvent } from '../interaction/round-event.i';
 import { TurnEvent } from '../interaction/turn-event.i';
+import IConstructable from '../utils/constructable.i';
 
 export default interface ICombatSimulation extends EventEmitter {
   readonly entities: IFactionMemberEntity[];
-  readonly turnResolver: ICombatTurn;
+  readonly turnResolver: IConstructable<ICombatTurn>;
   readonly challengeResolver: ICombatValidator;
   readonly roundRequestValidator: ICombatValidator;
-  
+
   rounds: ICombatRound[];
   currentRound?: ICombatRound;
-  
+
   ended: boolean;
 
   begin(): void;

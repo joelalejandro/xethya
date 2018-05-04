@@ -6,18 +6,19 @@ import IEntity from '../entity/entity.i';
 import ITurnSettings from './turn-settings.i';
 import IRoundSettings from './round-settings.i';
 
-import TurnResolver from './turn-resolver';
 import IConstructableTurn from './constructable-turn.i';
 import { ITurnEvent } from './turn-event.i';
+import Factory from '../utils/factory';
+import IConstructable from '../utils/constructable.i';
 
-export default abstract class AbstractRound extends XethyaObject implements IRound<ITurn> {
+export default abstract class AbstractRound<T extends ITurn> extends XethyaObject implements IRound<ITurn> {
   protected _roundNumber: number;
-  protected _turnType: ITurn;
-  protected _turns: ITurn[];
+  protected _turnType: IConstructable<T>;
+  protected _turns: T[];
   protected _entities: IEntity[];
   protected _currentTurn?: ITurn;
 
-  constructor({ entities, roundNumber, turnType }: IRoundSettings) {
+  constructor({ entities, roundNumber, turnType }: IRoundSettings<T>) {
     super();
 
     this._roundNumber = roundNumber;
@@ -54,13 +55,9 @@ export default abstract class AbstractRound extends XethyaObject implements IRou
     });
   }
 
-  buildTurnFor(entity: IEntity, turnNumber: number): ITurn {
-    const turnBuilder = new TurnResolver<ITurn, ITurnSettings>(
-      this.turnType as IConstructableTurn<ITurn>
-    );
-    
-    const turn = turnBuilder.create({ owner: entity, turnNumber } as ITurnSettings);
-    
+  buildTurnFor(entity: IEntity, turnNumber: number): T {
+    const turn = Factory.create(this.turnType, { owner: entity, turnNumber });
+
     turn.on('begin', this.onTurnBegin.bind(this));
     turn.on('end', this.onTurnEnd.bind(this));
 
@@ -72,7 +69,7 @@ export default abstract class AbstractRound extends XethyaObject implements IRou
   }
 
   onTurnEnd({ turn }: ITurnEvent): void {
-    this.updateTurn(turn);
+    this.updateTurn(turn as T);
   }
 
   begin(): void {
@@ -83,21 +80,21 @@ export default abstract class AbstractRound extends XethyaObject implements IRou
 
     this.emit('begin', { round: this });
   }
-  
+
   announceTurn(): void {
-    const nextTurn: ITurn = this._turns.find(turn => !turn.isResolved()) as ITurn;
+    const nextTurn: T = this._turns.find(turn => !turn.isResolved()) as T;
     this._currentTurn = nextTurn;
 
     nextTurn.begin();
   }
 
-  updateTurn(turn: ITurn): void {
+  updateTurn(turn: T): void {
     const previousTurnIndex = turn.turnNumber - 1;
 
     this._turns[previousTurnIndex].action = turn.action;
     this.checkIfRoundIsComplete();
   }
-  
+
   checkIfRoundIsComplete(): void {
     if (this._turns.every(turn => turn.isResolved())) {
       this.emit('complete', { round: this });
