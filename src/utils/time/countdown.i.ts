@@ -8,5 +8,6 @@ export default interface ICountdown extends ITimeInterval {
   isFinished: boolean;
   beginCountdown(): void;
   pauseCountdown(): void;
-  stopCountdown(): void;
+  resumeCountdown(): void;
+  tick(): void;
 }

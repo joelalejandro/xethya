@@ -57,7 +57,7 @@ export default class Countdown extends TimeInterval implements ICountdown {
     this._countdownTimer = setInterval(() => this.tick(), 1000);
   }
 
-  protected tick(): void {
+  tick(): void {
     this._secondsElapsed += 1;
     this.emit('timer:tick', this);
 
